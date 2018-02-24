@@ -1,3 +1,15 @@
 .done {
   text-decoration: line-through;
 }
+
+#root {
+  padding: 0 10px;
+}
+
+#appContainer  {
+  background-color: white;
+  max-width: 720px;
+  margin: 60px auto;
+  border: 2px solid #7AC8FF;
+  padding: 10px;
+}

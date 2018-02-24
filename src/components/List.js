@@ -1,38 +1,50 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {List} from 'material-ui/List';
 import Li from './Li';
 
-class List extends Component {
+class MyList extends Component {
+
+  static propTypes = {
+    tasks :  PropTypes.arrayOf(PropTypes.object),
+    deleteTask : PropTypes.func.isRequired,
+    toggleTask : PropTypes.func.isRequired,
+  }
 
   static defaultProps = {
     tasks : [],
   }
 
-  constructor (props) {
-    super (props);
-    this.state = { tasks : props.tasks} ;
-  }
-
-  handleClick =  (idx) => {
-    let tasks_ = this.state.tasks;
-
-    tasks_[idx].isdone = ! tasks_[idx].isdone;
-    this.setState ({ tasks: tasks_ });
-  }
-
   render() {
-      let cat = this.state.tasks;
-      let handleClick = this.handleClick;
-      return (
-        <ul>{ (this.props.tasks.length > 0) ?
-             cat.map ( function (task, i) {
-                 return ( <Li  index = {i}
-                               isdone = {task.isdone}
-                               title = {task.title}
-                               handleClick = { handleClick } />)
-            }) : "Лежать + сосать"
-              }
-        </ul>
-      )
+    const {
+      tasks,
+      deleteTask,
+      toggleTask,
+    } = this.props;
+
+    return (
+      <List>{ (tasks.length > 0) ?
+        tasks.map ( (task) => {
+
+          const {
+            id,
+            isdone,
+            title
+          } = task;
+          return (
+            <Li
+              key = {id}
+              index = {id}
+              isdone = {isdone}
+              title = {title}
+              deleteTask = {deleteTask}
+              toggleTask = {toggleTask}
+            />
+          )
+        }) : "Введите вашу задачу"
+      }
+      </List>
+    )
   }
 }
-export default List;
+export default MyList;
