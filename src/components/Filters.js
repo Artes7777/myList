@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 export default class Filters extends  Component {
 
@@ -7,30 +8,37 @@ export default class Filters extends  Component {
     setFilter : PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      filter : "all" //all, completed, incompleted
-    }
+  state = {
+    filter : "all" //all, completed, incompleted
   }
 
-  selectFilter = (filter) => {
-    return () => {
-      this.setState( {filter : filter} );
-      this.props.setFilter(filter);
-    }
+  selectFilter = (event, value) => {
+    this.setState( {filter : value} );
+    this.props.setFilter(value);
   }
 
   render() {
 
-    const filter = this.state.filter;
-
     return (
-      <div>
-        <button disabled = {filter === "completed"} onClick = {this.selectFilter("completed")}>Завершенные</button>
-        <button disabled = { filter === "incompleted"} onClick = {this.selectFilter("incompleted")}>Незавершенные</button>
-        <button disabled = {filter === "all"} onClick = {this.selectFilter("all")}>Все</button>
-      </div>
+      <RadioButtonGroup
+        onChange = {this.selectFilter}
+        name="filter"
+        valueSelected = {this.state.filter}
+        className = "filterContainer"
+      >
+        <RadioButton
+          value="all"
+          label="Все"
+        />
+        <RadioButton
+          value="completed"
+          label="Завершенные"
+        />
+        <RadioButton
+          value="incompleted"
+          label="Незавершенные"
+        />
+      </RadioButtonGroup>
     )
   }
 }

@@ -46,7 +46,7 @@ export default class Input extends Component {
     const warning = this.state.error;
 
     return(
-      <div>
+      <div className = "inputContainer">
         <TextField
           value = {this.state.value}
           errorText = {warning}
@@ -55,7 +55,11 @@ export default class Input extends Component {
           hintText = "Введите задачу"
           floatingLabelText = "Новая задача"
         />
-        <RaisedButton onClick = {this.handleBtnClick} label="Создать" primary />
+        <RaisedButton
+          style = {{marginLeft : "16px"}}
+          onClick = {this.handleBtnClick}
+          label="Создать"
+          primary />
       </div>
     );
   }
