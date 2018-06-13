@@ -24,3 +24,18 @@ li {
   display : flex;
   justify-content : center;
 }
+
+.LiContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.LiCheckText {
+  display: flex;
+  align-items: center;
+}
+
+.Checkbox {
+  width: auto
+}

@@ -45,29 +45,33 @@ export default class Li extends Component {
       verticalAlign : 'middle'
     };
     return (
-      <span>
+      <div>
       {this.props.isdone ?
         <IconunDone onClick = {this.handleClick} style = {btnStyle} /> :
         <IconDone onClick = {this.handleClick} style = {btnStyle} />
       }
       <IconDelete onClick = {this.deleteTasker} style = {btnStyle} />
-      </span>
+      </div>
     )
   }
 
   render() {
     const taskStyles = {
+      maxWidth : 580,
+      wordWrap : "break-word",
       textDecoration: this.props.isdone ? "line-through" : "none"
     };
 
     return (
       <ListItem
-        leftIcon = {<Checkbox/>}
-        primaryText = { <div>
-                          <span style = {taskStyles}>{this.props.title}</span>
+        primaryText = { <div className = "LiContainer" >
+                          <div className = "LiCheckText">
+                            <Checkbox className = "Checkbox"/>
+                            <div style = {taskStyles}>{this.props.title}</div>
+                          </div>
                           {this.renderBtns()}
                         </div>
-                           }
+                      }
       />
     )
   }
