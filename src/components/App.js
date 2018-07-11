@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import uuid from 'uuid/v4';
 import List from './List.js';
 import Input from './input.js';
 import Filters from './Filters';
+import TaskManager from './TaskManager';
 import './App.css';
 
 class App extends Component {
@@ -12,15 +12,12 @@ class App extends Component {
       tasks : [],
       filter : 'all'
     } ;
+    this.taskManager = new TaskManager();
   }
 
   componentDidMount(){
-    let tasks = localStorage.getItem('tasks');
-    tasks = JSON.parse(tasks);
-    if (!tasks) {
-      tasks =  [];
-    }
-    this.setState({tasks : tasks});
+    this.taskManager.init();
+    this.setState({tasks : this.taskManager.getTasks()});
   }
 
   setFilter = (filter) => {
@@ -28,14 +25,8 @@ class App extends Component {
   }
 
   toggleTask = (id) => {
-    let tasks_ = this.state.tasks;
-    let index = tasks_.findIndex( (task)=> {
-      return task.id === id;
-
-    })
-    tasks_[index].isdone = !tasks_[index].isdone;
-    this.setState ({ tasks : tasks_ });
-    localStorage.setItem('tasks', JSON.stringify(tasks_));
+    this.taskManager.toggleTask(id);
+    this.setState ({ tasks : this.taskManager.getTasks() });
   }
 
   addTask = (title) => {
@@ -48,26 +39,17 @@ class App extends Component {
     if (isDuplicate) {
       return "Такая задача существует";
     }
-
-    let newTask = {
-      id: uuid(),
-      title: title
-    };
-    this.state.tasks.push (newTask);
-    this.setState ( {
-      tasks : this.state.tasks
-    } );
-    localStorage.setItem('tasks', JSON.stringify(this.state.tasks));
+    this.taskManager.addTask(title);
+    this.setState ({
+      tasks : this.taskManager.getTasks()
+    });
     return "";
   }
 
   deleteTask = (id) => {
-    let index = this.state.tasks.findIndex( (task) => {
-      return task.id === id;
-    })
-    this.state.tasks.splice(index, 1);
-    this.setState({ tasks: this.state.tasks});
-    localStorage.setItem('tasks', JSON.stringify(this.state.tasks));
+    this.taskManager.deleteTask(id);
+    this.setState({ tasks: this.taskManager.getTasks()
+    });
   }
 
   render() {
