@@ -29,7 +29,9 @@ class MyList extends Component {
           const {
             id,
             isdone,
-            title
+            title,
+            createdAt,
+            updatedAt
           } = task;
           return (
             <Li
@@ -37,6 +39,8 @@ class MyList extends Component {
               index = {id}
               isdone = {isdone}
               title = {title}
+              createdAt = {createdAt}
+              updatedAt = {updatedAt}
               deleteTask = {deleteTask}
               toggleTask = {toggleTask}
             />

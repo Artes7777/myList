@@ -15,6 +15,8 @@ export default class Li extends Component {
     ]).isRequired,
     isdone : PropTypes.bool,
     title : PropTypes.string,
+    createdAt: PropTypes.number,
+    updatedAt: PropTypes.number,
     toggleTask :  PropTypes.func.isRequired,
     deleteTask : PropTypes.func.isRequired,
   }
@@ -55,6 +57,20 @@ export default class Li extends Component {
     )
   }
 
+  formatTime = (date) => {
+    return new Date(date).toLocaleString();
+  }
+
+  getTimeText = () => {
+    const {
+      isdone,
+      createdAt,
+      updatedAt,
+    } = this.props;
+    return isdone ? `Выполнено : ${this.formatTime(updatedAt)}` :
+      `Создано : ${this.formatTime(createdAt)}`;
+  }
+
   render() {
     const taskStyles = {
       maxWidth : 580,
@@ -64,13 +80,15 @@ export default class Li extends Component {
 
     return (
       <ListItem
-        primaryText = { <div className = "LiContainer" >
+        primaryText = { <div><div className = "LiContainer" >
                           <div className = "LiCheckText">
-                            <Checkbox className = "Checkbox"/>
+                            <div><Checkbox className = "Checkbox"/></div>
                             <div style = {taskStyles}>{this.props.title}</div>
+
                           </div>
                           {this.renderBtns()}
                         </div>
+                          {this.getTimeText()}</div>
                       }
       />
     )

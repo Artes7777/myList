@@ -18,9 +18,9 @@ export default class TaskManager {
   addTask(title) {
     let newTask = {
       id: uuid(),
-      title: title
+      title: title,
+      createdAt : (new Date()).getTime()
     };
-
     this.tasks.push(newTask);
     localStorage.setItem('tasks', JSON.stringify(this.tasks));
   }
@@ -37,9 +37,11 @@ export default class TaskManager {
     let tasks = this.tasks;
     let index = tasks.findIndex( (task)=> {
       return task.id === id;
-    })
+    });
 
     tasks[index].isdone = !tasks[index].isdone;
+    tasks[index].updatedAt = (new Date()).getTime();
+
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 }

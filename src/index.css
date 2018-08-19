@@ -32,10 +32,11 @@ li {
 }
 
 .LiCheckText {
-  display: flex;
+display: flex;
   align-items: center;
 }
 
 .Checkbox {
-  width: auto
+  width: auto;
+
 }
