@@ -26,22 +26,28 @@ export default class TaskManager {
   }
 
   deleteTask(id){
-    let index = this.tasks.findIndex( (task) => {
-      return task.id === id;
-    })
-      this.tasks.splice(index, 1);
-      localStorage.setItem('tasks', JSON.stringify(this.tasks))
+    return new Promise( (resolve, reject) => {
+      let index = this.tasks.findIndex( (task) => {
+        return task.id === id;
+      })
+        this.tasks.splice(index, 1);
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+        return resolve();
+      });
   }
 
   toggleTask(id) {
-    let tasks = this.tasks;
-    let index = tasks.findIndex( (task)=> {
-      return task.id === id;
+    return new Promise( (resolve, reject) => {
+      let tasks = this.tasks;
+      let index = tasks.findIndex( (task)=> {
+        return task.id === id;
+      });
+
+      tasks[index].isdone = !tasks[index].isdone;
+      tasks[index].updatedAt = (new Date()).getTime();
+
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      return resolve();
     });
-
-    tasks[index].isdone = !tasks[index].isdone;
-    tasks[index].updatedAt = (new Date()).getTime();
-
-    localStorage.setItem('tasks', JSON.stringify(tasks));
   }
 }

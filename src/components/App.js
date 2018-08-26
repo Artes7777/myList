@@ -25,8 +25,13 @@ class App extends Component {
   }
 
   toggleTask = (id) => {
-    this.taskManager.toggleTask(id);
-    this.setState ({ tasks : this.taskManager.getTasks() });
+    this.taskManager.toggleTask(id)
+      .then( () => {
+        this.setState({tasks : this.taskManager.getTasks()});
+      })
+      .catch( (err) => {
+        console.log(err);
+      });
   }
 
   addTask = (title) => {
@@ -47,9 +52,13 @@ class App extends Component {
   }
 
   deleteTask = (id) => {
-    this.taskManager.deleteTask(id);
-    this.setState({ tasks: this.taskManager.getTasks()
-    });
+    this.taskManager.deleteTask(id)
+    .then( () => {
+      this.setState({ tasks: this.taskManager.getTasks()});
+    })
+   .catch( (err) => {
+     console.log(err);
+   });
   }
 
   render() {
