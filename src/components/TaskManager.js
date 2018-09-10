@@ -16,14 +16,35 @@ export default class TaskManager {
     return this.tasks;
   }
 
+  validateTask(title) {
+    if (title === '') {
+      throw new Error ("Введите задачу");
+    }
+    const isDuplicate = this.tasks.some((task) => {
+      return task.title === title;
+    });
+    if (isDuplicate) {
+      throw new Error ("Такая задача существует");
+    }
+  }
+
   addTask(title) {
-    let newTask = {
-      id: uuid(),
-      title: title,
-      createdAt : (new Date()).getTime()
-    };
-    this.tasks.push(newTask);
-    localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    return new Promise ((resolve, reject ) => {
+      try {
+        this.validateTask(title);
+      } catch (err) {
+        return reject(err);
+      }
+
+      const newTask = {
+        id: uuid(),
+        title: title,
+        createdAt : (new Date()).getTime()
+      };
+      this.tasks.push(newTask);
+      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      return resolve();
+    });
   }
 
   deleteTask(id){
@@ -58,5 +79,7 @@ export default class TaskManager {
 
     localStorage.setItem('tasks', JSON.stringify(this.tasks));
   }
+
+
 
 }

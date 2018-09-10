@@ -30,7 +30,7 @@ class App extends Component {
   }
 
   toggleTask = (id) => {
-    this.taskManager.toggleTask(id)
+    return this.taskManager.toggleTask(id)
       .then( () => {
         this.setState({tasks : this.taskManager.getTasks()});
       })
@@ -40,30 +40,26 @@ class App extends Component {
   }
 
   addTask = (title) => {
-    if (title === '') {
-      return "Введите задачу";
-    }
-    let isDuplicate = this.state.tasks.some(function(task) {
-      return task.title === title;
-    });
-    if (isDuplicate) {
-      return "Такая задача существует";
-    }
-    this.taskManager.addTask(title);
-    this.setState ({
-      tasks : this.taskManager.getTasks()
-    });
-    return "";
+    return this.taskManager.addTask(title)
+      .then( () => {
+        this.setState ({
+          tasks : this.taskManager.getTasks()
+        });
+      })
+      .catch((err) => {
+        console.log(err.message);
+        throw err;
+      });
   }
 
   deleteTask = (id) => {
-    this.taskManager.deleteTask(id)
-    .then( () => {
-      this.setState({ tasks: this.taskManager.getTasks()});
-    })
-   .catch( (err) => {
-     console.log(err);
-   });
+    return this.taskManager.deleteTask(id)
+      .then( () => {
+        this.setState({ tasks: this.taskManager.getTasks()});
+      })
+     .catch( (err) => {
+       console.log(err);
+     });
   }
 
   multiplyDeleteTask = (id) => {

@@ -13,16 +13,20 @@ export default class Input extends Component {
     super(props);
     this.state = {
       value : "",
-      error : ""
+      error : null
     } ;
   }
 
   addTask = (value) => {
-    let error = this.props.addTask(value);
-
-    this.setState({
-      error : error,
-      value : ""
+    this.props.addTask(value)
+    .then( () => {
+      this.setState({
+        error : null,
+        value : ""
+      });
+    })
+    .catch( (err) => {
+      this.setState({ error : err.message});
     });
   }
 
