@@ -15,15 +15,28 @@ export default class Li extends Component {
     ]).isRequired,
     isdone : PropTypes.bool,
     title : PropTypes.string,
-    createdAt: PropTypes.number,
-    updatedAt: PropTypes.number,
+    createdAt : PropTypes.number,
+    updatedAt : PropTypes.number,
+    checked : PropTypes.bool,
     toggleTask :  PropTypes.func.isRequired,
     deleteTask : PropTypes.func.isRequired,
+    selectTask : PropTypes.func.isRequired,
+
   }
 
   static defaultProps = {
     isdone : false,
     title : "Сделать что-то",
+    checked : false
+  }
+
+  checkList = (event, isInputChecked) => {
+    const {
+      index,
+      selectTask,
+   } = this.props;
+    selectTask(index, isInputChecked);
+
   }
 
   handleClick = () => {
@@ -47,7 +60,7 @@ export default class Li extends Component {
       verticalAlign : 'middle'
     };
     return (
-      <div>
+      <div className = "RenderBts">
       {this.props.isdone ?
         <IconunDone onClick = {this.handleClick} style = {btnStyle} /> :
         <IconDone onClick = {this.handleClick} style = {btnStyle} />
@@ -72,23 +85,32 @@ export default class Li extends Component {
   }
 
   render() {
+    const {
+      isdone,
+      title,
+      checked
+    } = this.props;
+
     const taskStyles = {
       maxWidth : 580,
       wordWrap : "break-word",
-      textDecoration: this.props.isdone ? "line-through" : "none"
+      textDecoration: isdone ? "line-through" : "none"
     };
 
     return (
       <ListItem
-        primaryText = { <div><div className = "LiContainer" >
-                          <div className = "LiCheckText">
-                            <div><Checkbox className = "Checkbox"/></div>
-                            <div style = {taskStyles}>{this.props.title}</div>
+        primaryText = { <div>
+                          <div className = "LiContainer" >
+                            <Checkbox checked = {checked}
+                            label = {<div style = {taskStyles}>{title}</div>}
+                            onCheck = {this.checkList}
+                            className = "Checkbox"
+                            />
 
+                            {this.renderBtns()}
                           </div>
-                          {this.renderBtns()}
+                            {this.getTimeText()}
                         </div>
-                          {this.getTimeText()}</div>
                       }
       />
     )

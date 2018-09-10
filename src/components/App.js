@@ -3,6 +3,9 @@ import List from './List.js';
 import Input from './input.js';
 import Filters from './Filters';
 import TaskManager from './TaskManager';
+import Checkbox from 'material-ui/Checkbox';
+import IconButton from 'material-ui/IconButton';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
 import './App.css';
 
 class App extends Component {
@@ -10,8 +13,10 @@ class App extends Component {
     super (props);
     this.state = {
       tasks : [],
-      filter : 'all'
-    } ;
+      filter : 'all',
+      selected : new Set(),
+      isSelectedAll : false
+    };
     this.taskManager = new TaskManager();
   }
 
@@ -61,10 +66,51 @@ class App extends Component {
    });
   }
 
-  render() {
+  multiplyDeleteTask = (id) => {
+    let ids = this.state.selected;
+    this.taskManager.multiplyDelete(ids);
+    this.setState({ tasks: this.taskManager.getTasks(),
+                    selected : new Set() });
+  }
 
-    let { tasks, filter } = this.state;
-    let filteredTasks = tasks.filter( (task)=> {
+  selectAll = (select) => {
+    const {tasks, selected} = this.state;
+
+    tasks.forEach ( (task) => {
+      if (select) {
+        selected.add(task.id);
+      }
+      else {
+        selected.delete(task.id);
+      }
+    });
+
+    this.setState({ selected: selected });
+  }
+
+  toggleSelect = (event, isInputChecked) => {
+    this.setState({ isSelectedAll : isInputChecked });
+    this.selectAll(isInputChecked);
+  }
+
+  selectTask = (id, checked) => {
+    const {selected} = this.state;
+
+    if (checked) {
+      selected.add(id);
+    }
+    else {
+      selected.delete(id);
+    }
+    this.setState({ selected: selected});
+  }
+
+
+  render() {
+    console.log(this.state.selected);
+
+    const { tasks, filter, selected, isSelectedAll } = this.state;
+    const filteredTasks = tasks.filter( (task)=> {
       switch(filter) {
         case "all" :
           return true;
@@ -77,18 +123,34 @@ class App extends Component {
       }
     });
 
-    return (
-       <div id = "appContainer">
-         <h1>Список задач</h1>
-         <Input addTask = {this.addTask} />
+    const isSelectedEmpty = selected.size < 1;
+    const isTasksEmpty = tasks.length < 1;
 
-         <List
-           tasks = {filteredTasks}
-           deleteTask = {this.deleteTask}
-           toggleTask = {this.toggleTask}
-         />
-         <Filters setFilter = {this.setFilter} />
-       </div>
+    return (
+      <div id = "appContainer">
+        <h1>Список задач</h1>
+        <Input
+          addTask = {this.addTask}
+        />
+
+        <Checkbox
+          checked = {isSelectedAll}
+          label = {isSelectedAll ? "Убрать все" : "Выделить все" }
+          disabled={isTasksEmpty}
+          onCheck = {this.toggleSelect}/>
+        <IconButton disabled={isSelectedEmpty} />
+          <ActionDelete onClick = {this.multiplyDeleteTask} color = {isSelectedEmpty ? "grey" : "black" }/>
+        <IconButton/>
+
+        <List
+          tasks = {filteredTasks}
+          selected = {selected}
+          deleteTask = {this.deleteTask}
+          toggleTask = {this.toggleTask}
+          selectTask = {this.selectTask}
+        />
+        <Filters setFilter = {this.setFilter} />
+      </div>
     )
   }
 }

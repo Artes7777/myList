@@ -31,9 +31,8 @@ li {
   align-items: center;
 }
 
-.LiCheckText {
-display: flex;
-  align-items: center;
+.RenderBts {
+  display: flex;
 }
 
 .Checkbox {

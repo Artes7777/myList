@@ -1,5 +1,6 @@
 import uuid from 'uuid/v4';
 
+
 export default class TaskManager {
 
   init() {
@@ -50,4 +51,12 @@ export default class TaskManager {
       return resolve();
     });
   }
+
+
+  multiplyDelete(ids) {
+    this.tasks = this.tasks.filter( task =>! ids.has(task.id) );
+
+    localStorage.setItem('tasks', JSON.stringify(this.tasks));
+  }
+
 }

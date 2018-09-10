@@ -9,17 +9,22 @@ class MyList extends Component {
     tasks :  PropTypes.arrayOf(PropTypes.object),
     deleteTask : PropTypes.func.isRequired,
     toggleTask : PropTypes.func.isRequired,
+    selectTask : PropTypes.func.isRequired,
+    selected : PropTypes.instanceOf(Set)
   }
 
   static defaultProps = {
+    selected : new Set(),
     tasks : [],
   }
 
   render() {
     const {
       tasks,
+      selected,
       deleteTask,
       toggleTask,
+      selectTask
     } = this.props;
 
     return (
@@ -31,7 +36,7 @@ class MyList extends Component {
             isdone,
             title,
             createdAt,
-            updatedAt
+            updatedAt,
           } = task;
           return (
             <Li
@@ -41,8 +46,10 @@ class MyList extends Component {
               title = {title}
               createdAt = {createdAt}
               updatedAt = {updatedAt}
+              checked = {selected.has(id)}
               deleteTask = {deleteTask}
               toggleTask = {toggleTask}
+              selectTask = {selectTask}
             />
           )
         }) : "Введите вашу задачу"
