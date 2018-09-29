@@ -3,9 +3,7 @@ import List from './List.js';
 import Input from './input.js';
 import Filters from './Filters';
 import TaskManager from './TaskManager';
-import Checkbox from 'material-ui/Checkbox';
-import IconButton from 'material-ui/IconButton';
-import ActionDelete from 'material-ui/svg-icons/action/delete';
+import MultiplyAct from './MultiplyAct.js';
 import './App.css';
 
 class App extends Component {
@@ -15,8 +13,8 @@ class App extends Component {
       tasks : [],
       filter : 'all',
       selected : new Set(),
-      isSelectedAll : false
-    };
+      isSelectedAll: false
+  };
     this.taskManager = new TaskManager();
   }
 
@@ -25,8 +23,8 @@ class App extends Component {
     this.setState({tasks : this.taskManager.getTasks()});
   }
 
-  setFilter = (filter) => {
-    this.setState({ filter : filter });
+  setFilter = (value) => {
+    this.setState({filter : value });
   }
 
   toggleTask = (id) => {
@@ -52,21 +50,52 @@ class App extends Component {
       });
   }
 
+  validateAllDeleteCheckbox = () => {
+    const {selected} = this.state;
+    if (selected.size < 1) {
+      this.setState({ isSelectedAll : false });
+    }
+  }
+
   deleteTask = (id) => {
+    const selected = this.state.selected;
     return this.taskManager.deleteTask(id)
       .then( () => {
-        this.setState({ tasks: this.taskManager.getTasks()});
+        selected.delete(id);
+        this.setState({ tasks: this.taskManager.getTasks(),
+                        selected: selected});
+        this.validateAllDeleteCheckbox();
       })
      .catch( (err) => {
        console.log(err);
      });
   }
 
-  multiplyDeleteTask = (id) => {
-    let ids = this.state.selected;
-    this.taskManager.multiplyDelete(ids);
-    this.setState({ tasks: this.taskManager.getTasks(),
-                    selected : new Set() });
+  isSelectedInFilter = () => {
+    const ids = this.state.selected;
+    return this.state.tasks.some( (task) => {
+      return ids.has(task.id) && this.isTaskInFilter(task);
+    });
+  }
+
+  multiplyDeleteTasks = () => {
+    const ids = this.state.selected;
+    const filteredIds = new Set();
+    this.state.tasks.forEach( (task) => {
+      if (ids.has(task.id) && this.isTaskInFilter(task)) {
+        filteredIds.add(task.id);
+        ids.delete(task.id);
+      }
+    });
+    return  this.taskManager.multiplyDelete(filteredIds)
+    .then( () => {
+      this.setState({ tasks: this.taskManager.getTasks(),
+                      selected : ids });
+      this.validateAllDeleteCheckbox();
+    })
+    .catch( (err) => {
+      console.log(err);
+    });
   }
 
   selectAll = (select) => {
@@ -84,11 +113,6 @@ class App extends Component {
     this.setState({ selected: selected });
   }
 
-  toggleSelect = (event, isInputChecked) => {
-    this.setState({ isSelectedAll : isInputChecked });
-    this.selectAll(isInputChecked);
-  }
-
   selectTask = (id, checked) => {
     const {selected} = this.state;
 
@@ -101,26 +125,36 @@ class App extends Component {
     this.setState({ selected: selected});
   }
 
+  toggleSelect = (isInputChecked) => {
+    this.setState({ isSelectedAll : isInputChecked });
+    this.selectAll(isInputChecked)
+  }
+
+  isTaskInFilter = (task) => {
+    switch(this.state.filter) {
+      case "all" :
+        return true;
+      case "completed" :
+        return task.isdone;
+      case "incompleted" :
+        return !task.isdone;
+      default:
+        return true;
+    }
+  }
+
+  filterTasks = () => {
+    return this.state.tasks.filter(this.isTaskInFilter);
+  }
 
   render() {
     console.log(this.state.selected);
 
     const { tasks, filter, selected, isSelectedAll } = this.state;
-    const filteredTasks = tasks.filter( (task)=> {
-      switch(filter) {
-        case "all" :
-          return true;
-        case "completed" :
-          return task.isdone;
-        case "incompleted" :
-          return !task.isdone;
-        default:
-          return true;
-      }
-    });
+    const filteredTasks = this.filterTasks();
 
-    const isSelectedEmpty = selected.size < 1;
-    const isTasksEmpty = tasks.length < 1;
+    const isTaskEmpty = tasks.length < 1;
+    const isSelectedEmpty = this.state.selected.size < 1;
 
     return (
       <div id = "appContainer">
@@ -129,15 +163,17 @@ class App extends Component {
           addTask = {this.addTask}
         />
 
-        <Checkbox
-          checked = {isSelectedAll}
-          label = {isSelectedAll ? "Убрать все" : "Выделить все" }
-          disabled={isTasksEmpty}
-          onCheck = {this.toggleSelect}/>
-        <IconButton disabled={isSelectedEmpty} />
-          <ActionDelete onClick = {this.multiplyDeleteTask} color = {isSelectedEmpty ? "grey" : "black" }/>
-        <IconButton/>
-
+        {
+          !isTaskEmpty ?
+            <MultiplyAct
+              toggleSelect = {this.toggleSelect}
+              multiplyDeleteTask = {this.multiplyDeleteTasks}
+              isSelectedAll = {isSelectedAll}
+              isSelectedEmpty = {isSelectedEmpty}
+              isSelectedInFilter = {this.isSelectedInFilter()}
+            />
+            : null
+        }
         <List
           tasks = {filteredTasks}
           selected = {selected}
@@ -145,7 +181,10 @@ class App extends Component {
           toggleTask = {this.toggleTask}
           selectTask = {this.selectTask}
         />
-        <Filters setFilter = {this.setFilter} />
+        <Filters
+          filter = {filter}
+          setFilter = {this.setFilter}
+        />
       </div>
     )
   }

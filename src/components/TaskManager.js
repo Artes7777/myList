@@ -47,12 +47,13 @@ export default class TaskManager {
     });
   }
 
-  deleteTask(id){
+  deleteTask(id, selected){
     return new Promise( (resolve, reject) => {
       let index = this.tasks.findIndex( (task) => {
         return task.id === id;
       })
         this.tasks.splice(index, 1);
+
         localStorage.setItem('tasks', JSON.stringify(this.tasks));
         return resolve();
       });
@@ -75,9 +76,12 @@ export default class TaskManager {
 
 
   multiplyDelete(ids) {
-    this.tasks = this.tasks.filter( task =>! ids.has(task.id) );
+    return new Promise( (resolve, reject) => {
+      this.tasks = this.tasks.filter( task =>! ids.has(task.id) );
 
-    localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      localStorage.setItem('tasks', JSON.stringify(this.tasks));
+      return resolve();
+    });
   }
 
 

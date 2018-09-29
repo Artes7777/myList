@@ -5,15 +5,12 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 export default class Filters extends  Component {
 
   static propTypes = {
+    filter : PropTypes.string,
     setFilter : PropTypes.func.isRequired
   }
 
-  state = {
-    filter : "all" //all, completed, incompleted
-  }
 
   selectFilter = (event, value) => {
-    this.setState( {filter : value} );
     this.props.setFilter(value);
   }
 
@@ -23,7 +20,7 @@ export default class Filters extends  Component {
       <RadioButtonGroup
         onChange = {this.selectFilter}
         name="filter"
-        valueSelected = {this.state.filter}
+        valueSelected = {this.props.filter}
         className = "filterContainer"
       >
         <RadioButton
