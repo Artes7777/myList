@@ -19,8 +19,13 @@ class App extends Component {
   }
 
   componentDidMount(){
-    this.taskManager.init();
-    this.setState({tasks : this.taskManager.getTasks()});
+    return this.taskManager.init()
+      .then( () => {
+        this.setState({tasks : this.taskManager.getTasks()});
+      })
+    .catch( (err) => {
+      console.log(err);
+    });
   }
 
   setFilter = (value) => {

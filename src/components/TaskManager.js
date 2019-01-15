@@ -1,15 +1,19 @@
 import uuid from 'uuid/v4';
+import fire from '../fire';
 
 
 export default class TaskManager {
 
+  constructor() {
+    this.db = fire.database();
+  }
+
   init() {
-    let tasks = localStorage.getItem('tasks');
-    tasks = JSON.parse(tasks);
-    if (!tasks) {
-      tasks =  [];
-    }
-    this.tasks = tasks;
+    return this.db.ref('/tasks').once('value')
+      .then( (snapshot) => {
+        const tasksDb = snapshot.val() || {};
+        this.tasks = Object.values(tasksDb);
+      });
   }
 
   getTasks() {
@@ -30,7 +34,7 @@ export default class TaskManager {
 
   addTask(title) {
     return new Promise ((resolve, reject ) => {
-      try {
+        try {
         this.validateTask(title);
       } catch (err) {
         return reject(err);
@@ -41,49 +45,53 @@ export default class TaskManager {
         title: title,
         createdAt : (new Date()).getTime()
       };
-      this.tasks.push(newTask);
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
-      return resolve();
+
+      return this.db.ref(`/tasks/${newTask.id}`).set(newTask)
+        .then( () => {
+          this.tasks.push(newTask);
+          return resolve();
+        });
     });
   }
 
-  deleteTask(id, selected){
-    return new Promise( (resolve, reject) => {
-      let index = this.tasks.findIndex( (task) => {
-        return task.id === id;
-      })
+  deleteTask(id) {
+    return this.db.ref(`/tasks/${id}`).remove()
+      .then( () =>  {
+        const index = this.tasks.findIndex( (task) =>  task.id === id );
         this.tasks.splice(index, 1);
-
-        localStorage.setItem('tasks', JSON.stringify(this.tasks));
-        return resolve();
       });
   }
 
   toggleTask(id) {
-    return new Promise( (resolve, reject) => {
-      let tasks = this.tasks;
-      let index = tasks.findIndex( (task)=> {
-        return task.id === id;
+    return this.db.ref(`/tasks/${id}`).once('value')
+      .then( (snapshot) => {
+        const isdone = (snapshot.val() && snapshot.val().isdone) || false;
+        const updatedAt = (new Date()).getTime();
+        return this.db.ref(`tasks/${id}`).update({
+          isdone : !isdone ,
+          updatedAt : updatedAt
+        })
+          .then( () => {
+            const tasks = this.tasks;
+            const index = tasks.findIndex( (task)=> task.id === id);
+
+            tasks[index].isdone = !isdone;
+            tasks[index].updatedAt = updatedAt;
+          });
       });
-
-      tasks[index].isdone = !tasks[index].isdone;
-      tasks[index].updatedAt = (new Date()).getTime();
-
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      return resolve();
-    });
   }
 
 
   multiplyDelete(ids) {
-    return new Promise( (resolve, reject) => {
-      this.tasks = this.tasks.filter( task =>! ids.has(task.id) );
-
-      localStorage.setItem('tasks', JSON.stringify(this.tasks));
-      return resolve();
+    const updates = {};
+    ids.forEach ( (id) => {
+      updates[`/tasks/${id}`] = null;
     });
+
+    return this.db.ref().update(updates)
+      .then( () => {
+        this.tasks = this.tasks.filter( task =>! ids.has(task.id) );
+      });
   }
-
-
 
 }
