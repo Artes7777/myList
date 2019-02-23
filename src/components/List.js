@@ -24,12 +24,16 @@ class MyList extends Component {
       selected,
       deleteTask,
       toggleTask,
-      selectTask
+      selectTask,
+      addNumberValue,
+      priorityStatus
     } = this.props;
 
     return (
       <List>{ (tasks.length > 0) ?
-        tasks.map ( (task) => {
+        tasks
+        .sort( (a, b) => b.numberValue - a.numberValue)
+        .map ( (task) => {
 
           const {
             id,
@@ -37,6 +41,7 @@ class MyList extends Component {
             title,
             createdAt,
             updatedAt,
+            numberValue,
           } = task;
           return (
             <Li
@@ -50,6 +55,9 @@ class MyList extends Component {
               deleteTask = {deleteTask}
               toggleTask = {toggleTask}
               selectTask = {selectTask}
+              addNumberValue = {addNumberValue}
+              numberValue = {numberValue}
+              priorityStatus = {priorityStatus}
             />
           )
         }) : "Введите вашу задачу"

@@ -152,6 +152,17 @@ class App extends Component {
     return this.state.tasks.filter(this.isTaskInFilter);
   }
 
+
+  addNumberValue = (id, priority) => {
+    return this.taskManager.addNumberValue(id, priority)
+      .then( () => {
+        this.setState({tasks : this.taskManager.getTasks()});
+      })
+      .catch( (err) => {
+        console.log(err);
+      });
+  }
+
   render() {
     console.log(this.state.selected);
 
@@ -185,7 +196,9 @@ class App extends Component {
           deleteTask = {this.deleteTask}
           toggleTask = {this.toggleTask}
           selectTask = {this.selectTask}
+          addNumberValue = {this.addNumberValue}
         />
+
         <Filters
           filter = {filter}
           setFilter = {this.setFilter}

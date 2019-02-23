@@ -3,10 +3,22 @@ import PropTypes from 'prop-types';
 import IconunDone from 'material-ui/svg-icons/content/clear';
 import IconDone from 'material-ui/svg-icons/action/done';
 import IconDelete from 'material-ui/svg-icons/navigation/cancel';
+import IconImidiate from 'material-ui/svg-icons/social/whatshot';
+import IconMiddle from 'material-ui/svg-icons/places/spa';
+import IconNormal from 'material-ui/svg-icons/social/mood';
+import IconClosedMenu from 'material-ui/svg-icons/navigation/menu';
+import IconOpenedMenu from 'material-ui/svg-icons/av/equalizer'
 import {ListItem} from 'material-ui/List';
 import Checkbox from 'material-ui/Checkbox';
+import {numberValue} from '../consts';
 
 export default class Li extends Component {
+  constructor (props) {
+    super (props);
+    this.state = {
+      isMenuBtnSelected : false,
+  };
+}
 
   static propTypes = {
     index : PropTypes.oneOfType([
@@ -30,6 +42,11 @@ export default class Li extends Component {
     checked : false
   }
 
+  ToggleBtnStatus(e){
+   e.preventDefault();
+   this.setState({isMenuBtnSelected: !this.state.isMenuBtnSelected})
+ }
+
   checkList = (event, isInputChecked) => {
     const {
       index,
@@ -38,6 +55,16 @@ export default class Li extends Component {
     selectTask(index, isInputChecked);
 
   }
+
+  addNumberVal = (priority) => {
+   return () => {
+    const {
+      index,
+      addNumberValue
+    } = this.props;
+   addNumberValue(index, priority);
+   }
+ }
 
   handleClick = () => {
     const {
@@ -61,11 +88,21 @@ export default class Li extends Component {
     };
     return (
       <div className = "RenderBts">
-      {this.props.isdone ?
-        <IconunDone onClick = {this.handleClick} style = {btnStyle} /> :
-        <IconDone onClick = {this.handleClick} style = {btnStyle} />
-      }
-      <IconDelete onClick = {this.deleteTasker} style = {btnStyle} />
+        {this.props.isdone ?
+          <IconunDone onClick = {this.handleClick} style = {btnStyle} /> :
+          <IconDone onClick = {this.handleClick} style = {btnStyle} />
+        }
+        <IconDelete onClick = {this.deleteTasker} style = {btnStyle} />
+        {this.state.isMenuBtnSelected &&
+        <div className = "RenderBts">
+          <IconImidiate value ="middle"  onClick = {this.addNumberVal(numberValue.immediately)} style = {btnStyle}/>
+          <IconMiddle value ="middle"  onClick = {this.addNumberVal(numberValue.middle)} style = {btnStyle}/>
+          <IconNormal value ="normal"  onClick = {this.addNumberVal(numberValue.normal)} style = {btnStyle}/>
+        </div>
+        }
+        {this.state.isMenuBtnSelected ? <IconOpenedMenu onClick = {this.ToggleBtnStatus.bind(this)} style = {btnStyle}/> :
+          <IconClosedMenu onClick = {this.ToggleBtnStatus.bind(this)} style = {btnStyle}/>
+        }
       </div>
     )
   }
@@ -88,13 +125,16 @@ export default class Li extends Component {
     const {
       isdone,
       title,
-      checked
+      checked,
+      numberValue
     } = this.props;
 
     const taskStyles = {
       maxWidth : 580,
       wordWrap : "break-word",
-      textDecoration: isdone ? "line-through" : "none"
+      textDecoration: isdone ? "line-through" : "none",
+      fontStyle: (numberValue) === 3 ? "italic" : (numberValue === 2) ? "italic" : "normal",
+      fontWeight: (numberValue) === 3 ? "bold": "normal",
     };
 
     return (
@@ -105,7 +145,9 @@ export default class Li extends Component {
                             label = {<div style = {taskStyles}>{title}</div>}
                             onCheck = {this.checkList}
                             className = "Checkbox"
-                            />
+                            iconStyle= {(numberValue === 3) ? {fill: 'red'} :
+                                       (numberValue === 2) ? {fill: 'orange'} :
+                                       {fill: 'grey'}}/>
 
                             {this.renderBtns()}
                           </div>

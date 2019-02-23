@@ -1,16 +1,15 @@
 import uuid from 'uuid/v4';
 import fire from '../fire';
-
+import {numberValue} from '../consts';
 
 export default class TaskManager {
-
   constructor() {
     this.db = fire.database();
   }
 
   init() {
     return this.db.ref('/tasks').once('value')
-      .then( (snapshot) => {
+      .then((snapshot) => {
         const tasksDb = snapshot.val() || {};
         this.tasks = Object.values(tasksDb);
       });
@@ -22,19 +21,17 @@ export default class TaskManager {
 
   validateTask(title) {
     if (title === '') {
-      throw new Error ("Введите задачу");
+      throw new Error('Введите задачу');
     }
-    const isDuplicate = this.tasks.some((task) => {
-      return task.title === title;
-    });
+    const isDuplicate = this.tasks.some(task => task.title === title);
     if (isDuplicate) {
-      throw new Error ("Такая задача существует");
+      throw new Error('Такая задача существует');
     }
   }
 
   addTask(title) {
-    return new Promise ((resolve, reject ) => {
-        try {
+    return new Promise((resolve, reject) => {
+      try {
         this.validateTask(title);
       } catch (err) {
         return reject(err);
@@ -42,12 +39,13 @@ export default class TaskManager {
 
       const newTask = {
         id: uuid(),
-        title: title,
-        createdAt : (new Date()).getTime()
+        title,
+        createdAt: (new Date()).getTime(),
+        numberValue: numberValue.normal,
       };
 
       return this.db.ref(`/tasks/${newTask.id}`).set(newTask)
-        .then( () => {
+        .then(() => {
           this.tasks.push(newTask);
           return resolve();
         });
@@ -56,24 +54,24 @@ export default class TaskManager {
 
   deleteTask(id) {
     return this.db.ref(`/tasks/${id}`).remove()
-      .then( () =>  {
-        const index = this.tasks.findIndex( (task) =>  task.id === id );
+      .then(() => {
+        const index = this.tasks.findIndex(task => task.id === id);
         this.tasks.splice(index, 1);
       });
   }
 
   toggleTask(id) {
     return this.db.ref(`/tasks/${id}`).once('value')
-      .then( (snapshot) => {
+      .then((snapshot) => {
         const isdone = (snapshot.val() && snapshot.val().isdone) || false;
         const updatedAt = (new Date()).getTime();
         return this.db.ref(`tasks/${id}`).update({
-          isdone : !isdone ,
-          updatedAt : updatedAt
+          isdone: !isdone,
+          updatedAt,
         })
-          .then( () => {
+          .then(() => {
             const tasks = this.tasks;
-            const index = tasks.findIndex( (task)=> task.id === id);
+            const index = tasks.findIndex(task => task.id === id);
 
             tasks[index].isdone = !isdone;
             tasks[index].updatedAt = updatedAt;
@@ -84,14 +82,30 @@ export default class TaskManager {
 
   multiplyDelete(ids) {
     const updates = {};
-    ids.forEach ( (id) => {
+    ids.forEach((id) => {
       updates[`/tasks/${id}`] = null;
     });
 
     return this.db.ref().update(updates)
-      .then( () => {
-        this.tasks = this.tasks.filter( task =>! ids.has(task.id) );
+      .then(() => {
+        this.tasks = this.tasks.filter(task => !ids.has(task.id));
       });
+  }
+
+  addNumberValue(id, priority) {
+    return this.db.ref(`/tasks/${id}`).once('value')
+    .then((snapshot) => {
+
+      return this.db.ref(`tasks/${id}`).update({
+        numberValue : priority
+      })
+      .then(() => {
+        const tasks = this.tasks;
+        const index = tasks.findIndex(task => task.id === id);
+
+        tasks[index].numberValue =  priority;
+      });
+    });
   }
 
 }
