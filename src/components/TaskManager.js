@@ -8,10 +8,12 @@ export default class TaskManager {
   }
 
   init() {
-    return this.db.ref('/tasks').once('value')
+    return this.db.ref('/tasks').orderByChild("createdAt").once('value')
       .then((snapshot) => {
-        const tasksDb = snapshot.val() || {};
-        this.tasks = Object.values(tasksDb);
+        this.tasks = [];
+        snapshot.forEach( (child) => {
+          this.tasks.push(child.val());
+        });
       });
   }
 

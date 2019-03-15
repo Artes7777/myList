@@ -35,6 +35,18 @@ li {
   display: flex;
 }
 
-.Checkbox {
-  width: auto;
+.flexBtn {
+ padding-left: 5px;
+ padding-right: 5px;
+ display: flex;
+ justify-content : space-between;
+}
+
+.flexString {
+ text-align: center;
+}
+
+.flag {
+  width: 20%;
+  height: 20%
 }

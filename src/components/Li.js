@@ -1,24 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import IconMenu from 'material-ui/IconMenu';
+import Divider from 'material-ui/Divider';
 import IconunDone from 'material-ui/svg-icons/content/clear';
 import IconDone from 'material-ui/svg-icons/action/done';
 import IconDelete from 'material-ui/svg-icons/navigation/cancel';
-import IconImidiate from 'material-ui/svg-icons/social/whatshot';
-import IconMiddle from 'material-ui/svg-icons/places/spa';
-import IconNormal from 'material-ui/svg-icons/social/mood';
 import IconClosedMenu from 'material-ui/svg-icons/navigation/menu';
-import IconOpenedMenu from 'material-ui/svg-icons/av/equalizer'
 import {ListItem} from 'material-ui/List';
 import Checkbox from 'material-ui/Checkbox';
+import RedFlag from '../red-flag.svg';
+import YellowFlag from '../yellow-flag.svg';
+import GreyFlag from '../grey-flag.svg';
 import {numberValue} from '../consts';
 
 export default class Li extends Component {
-  constructor (props) {
-    super (props);
-    this.state = {
-      isMenuBtnSelected : false,
-  };
-}
 
   static propTypes = {
     index : PropTypes.oneOfType([
@@ -42,10 +37,6 @@ export default class Li extends Component {
     checked : false
   }
 
-  ToggleBtnStatus(e){
-   e.preventDefault();
-   this.setState({isMenuBtnSelected: !this.state.isMenuBtnSelected})
- }
 
   checkList = (event, isInputChecked) => {
     const {
@@ -66,6 +57,11 @@ export default class Li extends Component {
    }
  }
 
+ onKeyCloseMenu = (open, reason) => {
+   console.log(open, reason)
+
+  }
+
   handleClick = () => {
     const {
       index,
@@ -83,26 +79,34 @@ export default class Li extends Component {
   }
 
   renderBtns = () => {
-    const btnStyle = {
-      verticalAlign : 'middle'
-    };
+
     return (
       <div className = "RenderBts">
         {this.props.isdone ?
-          <IconunDone onClick = {this.handleClick} style = {btnStyle} /> :
-          <IconDone onClick = {this.handleClick} style = {btnStyle} />
+          <IconunDone onClick = {this.handleClick}  /> :
+        <IconDone onClick = {this.handleClick}  />
         }
-        <IconDelete onClick = {this.deleteTasker} style = {btnStyle} />
-        {this.state.isMenuBtnSelected &&
-        <div className = "RenderBts">
-          <IconImidiate value ="middle"  onClick = {this.addNumberVal(numberValue.immediately)} style = {btnStyle}/>
-          <IconMiddle value ="middle"  onClick = {this.addNumberVal(numberValue.middle)} style = {btnStyle}/>
-          <IconNormal value ="normal"  onClick = {this.addNumberVal(numberValue.normal)} style = {btnStyle}/>
-        </div>
-        }
-        {this.state.isMenuBtnSelected ? <IconOpenedMenu onClick = {this.ToggleBtnStatus.bind(this)} style = {btnStyle}/> :
-          <IconClosedMenu onClick = {this.ToggleBtnStatus.bind(this)} style = {btnStyle}/>
-        }
+        <IconDelete onClick = {this.deleteTasker} />
+
+
+         <IconMenu
+            onRequestChange = {this.onKeyCloseMenu}
+            menuStyle = { {width : "100px" } }
+            iconButtonElement={<IconClosedMenu/>}
+            anchorOrigin={{horizontal: 'left', vertical: 'top'}}
+            targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          >
+          <div className = "flexString">Приоритет</div>
+          <div className = "flexBtn">
+            <img alt = "Очень важно" className = "flag" onClick = {this.addNumberVal(numberValue.immediately)} src = {RedFlag}/>
+            <img alt = "Средне важно" className = "flag" onClick = {this.addNumberVal(numberValue.middle)}  src = {YellowFlag} />
+            <img alt = "Менее важно" className = "flag" onClick = {this.addNumberVal(numberValue.normal)}  src = {GreyFlag} />
+          </div>
+            <Divider />
+          <div className = "flexString">Напоминание</div>
+          </IconMenu>
+
+
       </div>
     )
   }
@@ -133,9 +137,15 @@ export default class Li extends Component {
       maxWidth : 580,
       wordWrap : "break-word",
       textDecoration: isdone ? "line-through" : "none",
-      fontStyle: (numberValue) === 3 ? "italic" : (numberValue === 2) ? "italic" : "normal",
+      fontStyle: (numberValue) === 3 ? "italic" :  "normal",
       fontWeight: (numberValue) === 3 ? "bold": "normal",
     };
+
+    const checkboxStyle = {
+      fill : (numberValue === 3) ? 'red' : (numberValue === 2) ? 'orange' : 'grey',
+      display : "flex",
+      alignSelf: "center"
+    }
 
     return (
       <ListItem
@@ -144,10 +154,7 @@ export default class Li extends Component {
                             <Checkbox checked = {checked}
                             label = {<div style = {taskStyles}>{title}</div>}
                             onCheck = {this.checkList}
-                            className = "Checkbox"
-                            iconStyle= {(numberValue === 3) ? {fill: 'red'} :
-                                       (numberValue === 2) ? {fill: 'orange'} :
-                                       {fill: 'grey'}}/>
+                            iconStyle= {checkboxStyle}/>
 
                             {this.renderBtns()}
                           </div>

@@ -32,7 +32,7 @@ class MyList extends Component {
     return (
       <List>{ (tasks.length > 0) ?
         tasks
-        .sort( (a, b) => b.numberValue - a.numberValue)
+        //.sort( (a, b) => b.numberValue - a.numberValue)
         .map ( (task) => {
 
           const {
