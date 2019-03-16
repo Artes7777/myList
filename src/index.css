@@ -50,3 +50,8 @@ li {
   width: 20%;
   height: 20%
 }
+
+.vp {
+  display : flex;
+justify-content: flex-end;
+}

@@ -4,6 +4,7 @@ import Input from './input.js';
 import Filters from './Filters';
 import TaskManager from './TaskManager';
 import MultiplyAct from './MultiplyAct.js';
+import DatePick from './DatePicker.js';
 import './App.css';
 
 class App extends Component {
@@ -190,6 +191,9 @@ class App extends Component {
             />
             : null
         }
+        <DatePick
+          isTaskEmpty = {isTaskEmpty}
+        />
         <List
           tasks = {filteredTasks}
           selected = {selected}
