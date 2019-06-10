@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import _ from 'underscore';
+import Divider from 'material-ui/Divider';
 import {List} from 'material-ui/List';
 import Li from './Li';
 
@@ -19,6 +22,7 @@ class MyList extends Component {
   }
 
   render() {
+    console.log(this.props.tasks);
     const {
       tasks,
       selected,
@@ -31,36 +35,48 @@ class MyList extends Component {
 
     return (
       <List>{ (tasks.length > 0) ?
-        tasks
-        //.sort( (a, b) => b.numberValue - a.numberValue)
-        .map ( (task) => {
-
+       _.chain(tasks)
+        .sortBy('onDateTask')
+        .sortBy('numberValue')
+        .groupBy((task) => moment(task.onDateTask).format('D, MM, YYYY'))
+        .map((group, date) => {
+    return (
+      <React.Fragment>
+        {date}
+        <Divider/>
+        {/*group.map((task) => {
           const {
-            id,
-            isdone,
-            title,
-            createdAt,
-            updatedAt,
-            numberValue,
-          } = task;
-          return (
-            <Li
-              key = {id}
-              index = {id}
-              isdone = {isdone}
-              title = {title}
-              createdAt = {createdAt}
-              updatedAt = {updatedAt}
-              checked = {selected.has(id)}
-              deleteTask = {deleteTask}
-              toggleTask = {toggleTask}
-              selectTask = {selectTask}
-              addNumberValue = {addNumberValue}
-              numberValue = {numberValue}
-              priorityStatus = {priorityStatus}
-            />
-          )
-        }) : "Введите вашу задачу"
+          id,
+          isdone,
+          title,
+          createdAt,
+          updatedAt,
+          numberValue,
+          onDateTask,
+        } = task;
+        return (
+          <Li
+            key = {id}
+            index = {id}
+            isdone = {isdone}
+            title = {title}
+            createdAt = {createdAt}
+            updatedAt = {updatedAt}
+            checked = {selected.has(id)}
+            deleteTask = {deleteTask}
+            toggleTask = {toggleTask}
+            selectTask = {selectTask}
+            addNumberValue = {addNumberValue}
+            numberValue = {numberValue}
+            priorityStatus = {priorityStatus}
+            onDateTask = {onDateTask}
+          />
+        )*/}
+      )}
+      </React.Fragment>
+    );
+  })
+  .value() : "Введите вашу задачу"
       }
       </List>
     )

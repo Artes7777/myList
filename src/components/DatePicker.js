@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import DatePicker from 'react-date-picker';
+import moment from 'moment';
 
 export default class DatePick extends Component {
-  state = {
-    date: new Date(),
-  }
 
-  onChange = date => this.setState({ date })
+  renderDatePickers = () => {
+    if (this.props.date === null) {
+      return moment().format('D.MM.Y') + " - " + moment().add(6, 'days').format('D.MM.Y')
+    }
+    else { return <DatePicker
+        onChange={this.props.onChange}
+        value={this.props.date}
+      />
+    }
+}
 
   render() {
     const vp = {
@@ -16,10 +23,7 @@ export default class DatePick extends Component {
 
     return (
       <div style = {vp}>
-        <DatePicker
-          onChange={this.onChange}
-          value={this.state.date}
-        />
+         {this.renderDatePickers()}
       </div>
     );
   }

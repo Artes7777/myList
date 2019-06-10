@@ -57,11 +57,6 @@ export default class Li extends Component {
    }
  }
 
- onKeyCloseMenu = (open, reason) => {
-   console.log(open, reason)
-
-  }
-
   handleClick = () => {
     const {
       index,
@@ -98,9 +93,12 @@ export default class Li extends Component {
           >
           <div className = "flexString">Приоритет</div>
           <div className = "flexBtn">
-            <img alt = "Очень важно" className = "flag" onClick = {this.addNumberVal(numberValue.immediately)} src = {RedFlag}/>
-            <img alt = "Средне важно" className = "flag" onClick = {this.addNumberVal(numberValue.middle)}  src = {YellowFlag} />
-            <img alt = "Менее важно" className = "flag" onClick = {this.addNumberVal(numberValue.normal)}  src = {GreyFlag} />
+            <img alt = "Очень важно" className = "flag"
+              onClick = {this.addNumberVal(numberValue.immediately)} src = {RedFlag}/>
+            <img alt = "Средне важно" className = "flag"
+              onClick = {this.addNumberVal(numberValue.middle)}  src = {YellowFlag} />
+            <img alt = "Менее важно" className = "flag"
+              onClick = {this.addNumberVal(numberValue.normal)}  src = {GreyFlag} />
           </div>
             <Divider />
           <div className = "flexString">Напоминание</div>

@@ -21,20 +21,19 @@ export default class TaskManager {
     return this.tasks;
   }
 
-  validateTask(title) {
+  validateTask(title, date) {
     if (title === '') {
       throw new Error('Введите задачу');
     }
-    const isDuplicate = this.tasks.some(task => task.title === title);
-    if (isDuplicate) {
-      throw new Error('Такая задача существует');
+    if (date === null) {
+      throw new Error('Выберите дату')
     }
   }
 
-  addTask(title) {
+  addTask(title, date) {
     return new Promise((resolve, reject) => {
       try {
-        this.validateTask(title);
+        this.validateTask(title, date);
       } catch (err) {
         return reject(err);
       }
@@ -42,6 +41,7 @@ export default class TaskManager {
       const newTask = {
         id: uuid(),
         title,
+        onDateTask : date.getTime(),
         createdAt: (new Date()).getTime(),
         numberValue: numberValue.normal,
       };

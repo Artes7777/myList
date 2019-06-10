@@ -6,10 +6,16 @@
   padding: 0 10px;
 }
 
+#Wrapper {
+  display: flex;
+  flex-direction : row;
+  margin: auto 60px;
+}
+
 #appContainer  {
   background-color: white;
+  margin-top: 10px;
   width: 720px;
-  margin: 60px auto;
-  border: 2px solid #7AC8FF;
+  border: 1px solid #7AC8FF;
   padding: 10px;
 }

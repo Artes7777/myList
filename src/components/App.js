@@ -5,6 +5,8 @@ import Filters from './Filters';
 import TaskManager from './TaskManager';
 import MultiplyAct from './MultiplyAct.js';
 import DatePick from './DatePicker.js';
+import LeftMenu from './LeftMenu.js';
+import moment from 'moment';
 import './App.css';
 
 class App extends Component {
@@ -14,7 +16,8 @@ class App extends Component {
       tasks : [],
       filter : 'all',
       selected : new Set(),
-      isSelectedAll: false
+      isSelectedAll: false,
+      date: new Date(),
   };
     this.taskManager = new TaskManager();
   }
@@ -29,8 +32,19 @@ class App extends Component {
     });
   }
 
+  onChange = date => this.setState({ date })
+
   setFilter = (value) => {
     this.setState({filter : value });
+  }
+
+  todayTasks = () => {
+    const today = new Date();
+    this.setState({date : today})
+  }
+
+  weekTasks = (task) => {
+    this.setState({date : null})
   }
 
   toggleTask = (id) => {
@@ -44,7 +58,8 @@ class App extends Component {
   }
 
   addTask = (title) => {
-    return this.taskManager.addTask(title)
+    const date = this.state.date;
+    return this.taskManager.addTask(title, date)
       .then( () => {
         this.setState ({
           tasks : this.taskManager.getTasks()
@@ -80,7 +95,7 @@ class App extends Component {
   isSelectedInFilter = () => {
     const ids = this.state.selected;
     return this.state.tasks.some( (task) => {
-      return ids.has(task.id) && this.isTaskInFilter(task);
+      return ids.has(task.id) && this.isTaskInFilter(task) && this.isTaskInDate(task) ;
     });
   }
 
@@ -88,7 +103,7 @@ class App extends Component {
     const ids = this.state.selected;
     const filteredIds = new Set();
     this.state.tasks.forEach( (task) => {
-      if (ids.has(task.id) && this.isTaskInFilter(task)) {
+      if (ids.has(task.id) && this.isTaskInFilter(task) && this.isTaskInDate(task)) {
         filteredIds.add(task.id);
         ids.delete(task.id);
       }
@@ -149,8 +164,28 @@ class App extends Component {
     }
   }
 
+  isTaskInDate = (task) => {
+    if  (moment(this.state.date).isSame(moment(task.onDateTask), 'day') )   {
+    return moment(task.onDateTask).calendar();
+
+    }
+    else if (this.state.date === null &&
+      moment(task.onDateTask).isAfter(moment().subtract(1, 'days')) &&
+      moment(task.onDateTask).isBefore(moment().add(6, 'days')) ) {
+        return  (moment(task.onDateTask).calendar()) ;
+    }
+  }
+
+
+
   filterTasks = () => {
-    return this.state.tasks.filter(this.isTaskInFilter);
+    return ( this.state.tasks.filter(this.isTaskInDate).filter(this.isTaskInFilter) )
+  }
+
+  groupTasks = () => {
+    if (this.state.date === null) {
+
+    }
   }
 
 
@@ -165,15 +200,21 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.selected);
 
-    const { tasks, filter, selected, isSelectedAll } = this.state;
+    const { tasks, filter, selected, date, isSelectedAll } = this.state;
     const filteredTasks = this.filterTasks();
 
     const isTaskEmpty = tasks.length < 1;
     const isSelectedEmpty = this.state.selected.size < 1;
 
     return (
+      <div id = "Wrapper">
+      <div>
+      <LeftMenu
+      weekTasks = {this.weekTasks}
+      todayTasks = {this.todayTasks}
+      />
+      </div>
       <div id = "appContainer">
         <h1>Список задач</h1>
         <Input
@@ -192,6 +233,8 @@ class App extends Component {
             : null
         }
         <DatePick
+          onChange = {this.onChange}
+          date = {date}
           isTaskEmpty = {isTaskEmpty}
         />
         <List
@@ -207,6 +250,7 @@ class App extends Component {
           filter = {filter}
           setFilter = {this.setFilter}
         />
+      </div>
       </div>
     )
   }
