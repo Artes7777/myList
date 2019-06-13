@@ -21,10 +21,16 @@ class MyList extends Component {
     tasks : [],
   }
 
-  render() {
-    console.log(this.props.tasks);
+  groupTasks() {
+    return _.chain(this.props.tasks)
+      .sortBy('onDateTask')
+      .sortBy('numberValue')
+      .groupBy((task) => moment(task.onDateTask).format('D, MM, YYYY'))
+      .value();
+  }
+
+  renderTasksGroup = (group, date) => {
     const {
-      tasks,
       selected,
       deleteTask,
       toggleTask,
@@ -34,52 +40,57 @@ class MyList extends Component {
     } = this.props;
 
     return (
-      <List>{ (tasks.length > 0) ?
-       _.chain(tasks)
-        .sortBy('onDateTask')
-        .sortBy('numberValue')
-        .groupBy((task) => moment(task.onDateTask).format('D, MM, YYYY'))
-        .map((group, date) => {
-    return (
-      <React.Fragment>
+      <div>
         {date}
+
         <Divider/>
-        {/*group.map((task) => {
-          const {
-          id,
-          isdone,
-          title,
-          createdAt,
-          updatedAt,
-          numberValue,
-          onDateTask,
-        } = task;
-        return (
-          <Li
-            key = {id}
-            index = {id}
-            isdone = {isdone}
-            title = {title}
-            createdAt = {createdAt}
-            updatedAt = {updatedAt}
-            checked = {selected.has(id)}
-            deleteTask = {deleteTask}
-            toggleTask = {toggleTask}
-            selectTask = {selectTask}
-            addNumberValue = {addNumberValue}
-            numberValue = {numberValue}
-            priorityStatus = {priorityStatus}
-            onDateTask = {onDateTask}
-          />
-        )*/}
-      )}
-      </React.Fragment>
+
+        {
+          _.map(group, (task) => {
+            const {
+              id,
+              isdone,
+              title,
+              createdAt,
+              updatedAt,
+              numberValue,
+              onDateTask,
+            } = task;
+
+            return (
+              <Li
+                key = {id}
+                index = {id}
+                isdone = {isdone}
+                title = {title}
+                createdAt = {createdAt}
+                updatedAt = {updatedAt}
+                checked = {selected.has(id)}
+                deleteTask = {deleteTask}
+                toggleTask = {toggleTask}
+                selectTask = {selectTask}
+                addNumberValue = {addNumberValue}
+                numberValue = {numberValue}
+                priorityStatus = {priorityStatus}
+                onDateTask = {onDateTask}
+              />
+            );
+          })
+        }
+      </div>
     );
-  })
-  .value() : "Введите вашу задачу"
-      }
-      </List>
-    )
+  }
+
+  render() {
+    const {tasks} = this.props;
+
+    return tasks.length
+      ? (
+        <List>
+          { _.map(this.groupTasks(), this.renderTasksGroup) }
+        </List>
+      )
+      : "Список пуст";
   }
 }
 export default MyList;
