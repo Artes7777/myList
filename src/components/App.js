@@ -239,6 +239,7 @@ class App extends Component {
         />
         <List
           tasks = {filteredTasks}
+          date = {date}
           selected = {selected}
           deleteTask = {this.deleteTask}
           toggleTask = {this.toggleTask}

@@ -53,5 +53,26 @@ li {
 
 .vp {
   display : flex;
-justify-content: flex-end;
+  justify-content: flex-end;
+}
+
+.weekDateStyle {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btnAllDelete {
+  display: flex;
+  justify-content : space-between;
+  align-items: center;
+}
+
+.btnAll {
+  max-width : 580;
+  word-wrap : break-word;
+}
+
+.styleDelete {
+  display: flex;
+  align-items: center
 }

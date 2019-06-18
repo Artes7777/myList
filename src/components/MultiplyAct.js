@@ -28,6 +28,12 @@ export  default class MultiplyAct extends Component {
 
 
   render() {
+
+    const checkboxStyle = {
+      display : "flex",
+      alignSelf: "center"
+    }
+
     const {
       isSelectedInFilter,
       isSelectedAll,
@@ -35,15 +41,19 @@ export  default class MultiplyAct extends Component {
     const isChecked = isSelectedAll && isSelectedInFilter;
 
     return (
-      <div>
-        <Checkbox
-        checked = {isChecked}
-        label = {isChecked ? "Убрать все" : "Выбрать все"}
-        onCheck = {this.toggleSelect}/>
+      <div className = "btnAllDelete">
 
-        <IconButton disabled={!isSelectedInFilter} />
-          <ActionDelete onClick = {this.multiplyDeleterTask} color = {isSelectedInFilter ? "black" : "grey" }/>
-        <IconButton/>
+          <Checkbox
+            checked = {isChecked}
+            label = {<div className = "btnAll">{isChecked ? "Убрать все" : "Выбрать все"}</div>}
+            iconStyle= {checkboxStyle}
+            onCheck = {this.toggleSelect}/>
+
+        <div className = "styleDelete">
+          <IconButton disabled={!isSelectedInFilter} />
+            <ActionDelete onClick = {this.multiplyDeleterTask} color = {isSelectedInFilter ? "black" : "grey" }/>
+          <IconButton/>
+        </div>
       </div>
     )
   }

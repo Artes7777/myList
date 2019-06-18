@@ -23,9 +23,9 @@ class MyList extends Component {
 
   groupTasks() {
     return _.chain(this.props.tasks)
+      .sortBy( function(a) {return -a.numberValue } )
       .sortBy('onDateTask')
-      .sortBy('numberValue')
-      .groupBy((task) => moment(task.onDateTask).format('D, MM, YYYY'))
+      .groupBy((task) => moment(task.onDateTask).format('D. MM. YYYY'))
       .value();
   }
 
@@ -40,8 +40,8 @@ class MyList extends Component {
     } = this.props;
 
     return (
-      <div>
-        {date}
+      <div className = "taskStyle">
+        <div className = "weekDateStyle">{this.props.date === null ? date : ""}</div>
 
         <Divider/>
 

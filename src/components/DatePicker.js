@@ -18,7 +18,7 @@ export default class DatePick extends Component {
   render() {
     const vp = {
       display : "flex",
-      justifyContent :  this.props.isTaskEmpty ? "center" : "flex-end",
+      justifyContent : "center",
     }
 
     return (
