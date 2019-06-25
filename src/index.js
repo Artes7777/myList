@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import './index.css';
-import App from './components/App';
+import Routing from './components/Routing';
 import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(
   <MuiThemeProvider>
-    <App />
+    <Routing />
   </MuiThemeProvider>,
   document.getElementById('root'));
 registerServiceWorker();

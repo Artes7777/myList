@@ -17,7 +17,7 @@ export default class LeftMenu extends Component {
           <Menu>
             <MenuItem onClick = {this.props.todayTasks} primaryText="Сегодня" />
             <MenuItem onClick = {this.props.weekTasks} primaryText="На неделю" />
-            <MenuItem primaryText="Календарь" />
+            <MenuItem onClick = {this.props.renderCalendar} primaryText="Календарь" />
             <MenuItem primaryText="Выйти" />
           </Menu>
         </Paper>

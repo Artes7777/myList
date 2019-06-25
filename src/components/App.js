@@ -18,6 +18,7 @@ class App extends Component {
       selected : new Set(),
       isSelectedAll: false,
       date: new Date(),
+      todayOrCalendar : null,
   };
     this.taskManager = new TaskManager();
   }
@@ -40,11 +41,19 @@ class App extends Component {
 
   todayTasks = () => {
     const today = new Date();
-    this.setState({date : today})
+    this.setState({date : today});
+    this.setState({todayOrCalendar : "today"})
   }
 
-  weekTasks = (task) => {
-    this.setState({date : null})
+  weekTasks = () => {
+    this.setState({date : null});
+    this.setState({todayOrCalendar : "today"})
+  }
+
+  renderCalendar = () => {
+    const today = new Date();
+    this.setState({date : today});
+    this.setState({todayOrCalendar : "calendar"})
   }
 
   toggleTask = (id) => {
@@ -201,7 +210,9 @@ class App extends Component {
 
   render() {
 
-    const { tasks, filter, selected, date, isSelectedAll } = this.state;
+    console.log(this.state.todayOrCalendar)
+
+    const { tasks, filter, selected, date, isSelectedAll, todayOrCalendar } = this.state;
     const filteredTasks = this.filterTasks();
 
     const isTaskEmpty = tasks.length < 1;
@@ -213,6 +224,7 @@ class App extends Component {
       <LeftMenu
       weekTasks = {this.weekTasks}
       todayTasks = {this.todayTasks}
+      renderCalendar = {this.renderCalendar}
       />
       </div>
       <div id = "appContainer">
@@ -232,11 +244,14 @@ class App extends Component {
             />
             : null
         }
+
         <DatePick
           onChange = {this.onChange}
           date = {date}
+          todayOrCalendar = {todayOrCalendar}
           isTaskEmpty = {isTaskEmpty}
         />
+
         <List
           tasks = {filteredTasks}
           date = {date}
