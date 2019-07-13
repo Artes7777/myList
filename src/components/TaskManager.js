@@ -8,7 +8,7 @@ export default class TaskManager {
   }
 
   init() {
-    return this.db.ref('/tasks').orderByChild("createdAt").once('value')
+   return this.db.ref('/tasks').orderByChild("createdAt").once('value')
       .then((snapshot) => {
         this.tasks = [];
         snapshot.forEach( (child) => {

@@ -40,7 +40,7 @@ class MyList extends Component {
     } = this.props;
 
     return (
-      <div className = "taskStyle">
+      <div key = {date} className = "taskStyle">
         <div className = "weekDateStyle">{this.props.date === null ? date : ""}</div>
 
         <Divider/>

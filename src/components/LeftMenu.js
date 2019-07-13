@@ -4,11 +4,11 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
 export default class LeftMenu extends Component {
+
   render() {
     const style = {
       display: 'inline-block',
       marginTop: '10px'
-
     };
 
     return (
@@ -18,7 +18,7 @@ export default class LeftMenu extends Component {
             <MenuItem onClick = {this.props.todayTasks} primaryText="Сегодня" />
             <MenuItem onClick = {this.props.weekTasks} primaryText="На неделю" />
             <MenuItem onClick = {this.props.renderCalendar} primaryText="Календарь" />
-            <MenuItem primaryText="Выйти" />
+            <MenuItem onClick ={this.props.logOut} primaryText="Выйти" />
           </Menu>
         </Paper>
       </div>

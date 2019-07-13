@@ -4,6 +4,7 @@ import App from "./App";
 import Auth from "./Auth";
 import SingUp from "./SingUp";
 
+
 export default class Routing extends Component {
   render() {
     return (

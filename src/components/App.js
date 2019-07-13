@@ -6,6 +6,7 @@ import TaskManager from './TaskManager';
 import MultiplyAct from './MultiplyAct.js';
 import DatePick from './DatePicker.js';
 import LeftMenu from './LeftMenu.js';
+import fire from "../fire";
 import moment from 'moment';
 import './App.css';
 
@@ -32,6 +33,14 @@ class App extends Component {
       console.log(err);
     });
   }
+
+   logOut = () => {
+      fire.auth().signOut()
+     .then(() => {
+       this.props.history.push("/auth")
+     })
+   }
+
 
   onChange = date => this.setState({ date })
 
@@ -210,8 +219,6 @@ class App extends Component {
 
   render() {
 
-    console.log(this.state.todayOrCalendar)
-
     const { tasks, filter, selected, date, isSelectedAll, todayOrCalendar } = this.state;
     const filteredTasks = this.filterTasks();
 
@@ -225,6 +232,7 @@ class App extends Component {
       weekTasks = {this.weekTasks}
       todayTasks = {this.todayTasks}
       renderCalendar = {this.renderCalendar}
+      logOut = {this.logOut}
       />
       </div>
       <div id = "appContainer">
