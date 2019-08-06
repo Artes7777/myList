@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Snackbar from 'material-ui/Snackbar';
+import Dialog from 'material-ui/Dialog';
 import fire from "../fire";
 import './Auth.css';
 
@@ -19,6 +20,7 @@ export default class SingUp extends Component {
       errpassTwo: null,
       error: null,
       open: false,
+      openDialog: false,
     }
   }
 
@@ -55,6 +57,10 @@ export default class SingUp extends Component {
   }
 }
 
+  openDialogWindow = () => {
+    this.setState({openDialog: true})
+  }
+
   singUp = () => {
     const {email, passOne} = this.state;
 
@@ -76,14 +82,19 @@ export default class SingUp extends Component {
         this.setState({open: true});
       }
       if (this.state.passOne === this.state.passTwo) {
-      this.auth.createUserWithEmailAndPassword(email, passOne)
-
+        this.auth.createUserWithEmailAndPassword(email, passOne)
+       .then(() => {
+         setTimeout(() => {this.props.history.push("/auth")}, 5000);
+          })
+       .then(() => {
+         this.openDialogWindow();
+        })
         .then(() => {
-            this.props.history.push("/auth")
+          this.auth.currentUser.sendEmailVerification();
         })
         .catch((err) => {
           if (err.message === "The email address is already in use by another account."){
-            err.message = "Такой пользователь уже зарегестрирован";
+            err.message = "Такой пользователь уже зарегистрирован";
           }
           else if (err.message === "The email address is badly formatted.") {
             err.message = "Неправильно введена электронная почта"
@@ -94,9 +105,9 @@ export default class SingUp extends Component {
           else if (err.message === "Password should be at least 6 characters"){
             err.message = "Пароль должен содержать 6 и более символов"
           }
-            this.setState({error : err.message}); this.setState({open: true})
+          this.setState({error : err.message}); this.setState({open: true})
         })
-}
+      }
   }
 
   onChange = event => {
@@ -166,6 +177,14 @@ console.log(this.state.error);
          autoHideDuration={4000}
          onRequestClose={this.handleRequestClose}
        />
+
+       <Dialog
+         title="Проверьте свою почту"
+         modal={false}
+         open={this.state.openDialog}
+         onRequestClose={this.handleClose}
+       >Мы отослали вам письмо с подтверждением вашей электронной почты
+       </Dialog>
       </div>
       </div>
       </div>

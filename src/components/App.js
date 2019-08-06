@@ -13,6 +13,7 @@ import './App.css';
 class App extends Component {
   constructor (props) {
     super (props);
+    this.auth = fire.auth();
     this.state = {
       tasks : [],
       filter : 'all',
@@ -218,6 +219,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.auth.currentUser);
 
     const { tasks, filter, selected, date, isSelectedAll, todayOrCalendar } = this.state;
     const filteredTasks = this.filterTasks();

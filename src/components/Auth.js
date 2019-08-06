@@ -18,8 +18,15 @@ export default class Auth extends Component {
       errPass : null,
       error: null,
       open: false,
+      emailVerified : false
     }
   }
+
+  componentDidMount(){
+  if (this.auth.currentUser != null) {
+   this.setState({emailVerified : this.auth.currentUser.emailVerified})
+ }
+}
 
   validateMail = () => {
     if (this.state.email === "") {
@@ -39,6 +46,12 @@ export default class Auth extends Component {
     }
   }
 
+  validateVerify = () => {
+     if (this.auth.currentUser.emailVerified === false) {
+        throw new Error("Подтвердите эмейл")
+     }
+  }
+
   singIn = () => {
     const {email, pass} = this.state;
      try {
@@ -56,6 +69,11 @@ export default class Auth extends Component {
 
      this.auth.signInWithEmailAndPassword(email, pass)
     .then(() => {
+       if (this.auth.currentUser.emailVerified === false) {
+         throw new Error('Почта не подверждена')
+       }
+    })
+    .then(() => {
       this.props.history.push("/")
       })
     .catch((err) => {
@@ -65,9 +83,12 @@ export default class Auth extends Component {
       if (err.message === "The password is invalid or the user does not have a password." ) {
         err.message = "Нерправильный логин или пароль"
       }
+      if (err.message === "There is no user record corresponding to this identifier. The user may have been deleted." ) {
+        err.message = "Нерправильный логин или пароль"
+      }
       this.setState({error:err.message}); this.setState({ open: true})
       })
-  }
+    }
 
   onChange = event => {
     this.setState({[event.target.name] : event.target.value });
@@ -80,7 +101,6 @@ export default class Auth extends Component {
   };
 
   render(){
-    console.log(this.state.errPass)
     return (
       <div id = "Wrapper">
       <div id = "auhtStyle">
