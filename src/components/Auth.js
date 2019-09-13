@@ -5,16 +5,18 @@ import {Link} from "react-router-dom";
 import Snackbar from 'material-ui/Snackbar';
 import fire from "../fire";
 import './Auth.css';
+import {connect} from "react-redux";
+import {setEmailText, setPasswordText} from "../store/Auth/actions"
 
-export default class Auth extends Component {
+class Auth extends Component {
 
   constructor(props){
     super(props);
     this.auth = fire.auth();
     this.state =  {
-      email : "",
+
       errMail : null,
-      pass : "",
+
       errPass : null,
       error: null,
       open: false,
@@ -154,3 +156,18 @@ export default class Auth extends Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    email: state.email,
+    pass: state.pass
+  }
+}
+
+const mapDispatchToProps = {
+  setEmailText,
+  setPasswordText
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Auth)

@@ -13,6 +13,7 @@ export default class SingUp extends Component {
     this.auth = fire.auth();
     this.state =  {
       email : "",
+      nickName : "",
       errMail : null,
       passOne: "",
       errpassOne: null,
@@ -92,6 +93,11 @@ export default class SingUp extends Component {
         .then(() => {
           this.auth.currentUser.sendEmailVerification();
         })
+        .then(() => {
+          this.auth.currentUser.updateProfile({
+            displayName: this.state.nickName,
+          });
+        })
         .catch((err) => {
           if (err.message === "The email address is already in use by another account."){
             err.message = "Такой пользователь уже зарегистрирован";
@@ -132,6 +138,9 @@ console.log(this.state.error);
           <p>Электронная почта</p>
           </div>
           <div id = "text1">
+          <p>Псевдоним</p>
+          </div>
+          <div id = "text1">
           <p>Пароль</p>
           </div>
           <div id = "text1">
@@ -144,6 +153,12 @@ console.log(this.state.error);
             name = "email"
             errorText = {this.state.errMail}
             value = {this.state.email}
+            onChange = {this.onChange}
+          />
+
+          <TextField
+            name = "nickName"
+            value = {this.state.nickName}
             onChange = {this.onChange}
           />
 

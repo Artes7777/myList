@@ -7,7 +7,10 @@ import MultiplyAct from './MultiplyAct.js';
 import DatePick from './DatePicker.js';
 import LeftMenu from './LeftMenu.js';
 import fire from "../fire";
+import Peca from "../peca.png";
 import moment from 'moment';
+import Avatar from 'material-ui/Avatar';
+import ListItem from 'material-ui/List/ListItem';
 import './App.css';
 
 class App extends Component {
@@ -218,6 +221,12 @@ class App extends Component {
       });
   }
 
+  displayUserName = () => {
+    if (this.auth.currentUser != null) {
+      return this.auth.currentUser.displayName
+    }
+  }
+
   render() {
     console.log(this.auth.currentUser);
 
@@ -276,6 +285,18 @@ class App extends Component {
           filter = {filter}
           setFilter = {this.setFilter}
         />
+
+      </div>
+      <div>
+      <ListItem
+        style = {{marginTop : "10px"}}
+        leftAvatar = {
+         <Avatar
+           src={Peca}
+         />
+        }
+       >{ this.displayUserName()}
+       </ListItem>
       </div>
       </div>
     )

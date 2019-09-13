@@ -1,5 +1,7 @@
 import React, {Component} from "react";
+import {Provider} from 'react-redux';
 import {BrowserRouter, Route, Redirect} from "react-router-dom";
+import {store} from '../store/redusers';
 import App from "./App";
 import Auth from "./Auth";
 import SingUp from "./SingUp";
@@ -70,11 +72,13 @@ export default class Routing extends Component {
     }
 
     return (
+      <Provider store = {store}>
       <BrowserRouter>
         <PrivateRoute exact path ="/" component = {App}/>
         <PrivateRoute1 path ="/auth" component = {Auth}/>
         <Route path ="/singup" component = {SingUp}/>
       </BrowserRouter>
+      </Provider>
     )
   }
 }

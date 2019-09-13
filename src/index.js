@@ -6,8 +6,8 @@ import Routing from './components/Routing';
 import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(
-  <MuiThemeProvider>
-    <Routing />
-  </MuiThemeProvider>,
+    <MuiThemeProvider>
+      <Routing />
+    </MuiThemeProvider>,
   document.getElementById('root'));
 registerServiceWorker();
