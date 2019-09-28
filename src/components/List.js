@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {connect} from "react-redux";
 import moment from 'moment';
 import _ from 'underscore';
 import Divider from 'material-ui/Divider';
 import {List} from 'material-ui/List';
 import Li from './Li';
+import {isTaskInFilter, isTaskInDate} from '../helpers';
 
 class MyList extends Component {
 
@@ -20,6 +22,7 @@ class MyList extends Component {
     selected : new Set(),
     tasks : [],
   }
+
 
   groupTasks() {
     return _.chain(this.props.tasks)
@@ -93,4 +96,13 @@ class MyList extends Component {
       : "Список пуст";
   }
 }
-export default MyList;
+
+const mapStateToProps = (state, ownProps) => {
+
+  return {
+    tasks : ownProps.tasks.filter((task) => isTaskInFilter(task, state.filter.filter) && isTaskInDate(task, state.date.date)),
+    date: state.date.date
+  }
+}
+
+export default connect(mapStateToProps)(MyList)

@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import DatePicker from 'react-date-picker';
 import Calendar from 'react-calendar';
 import moment from 'moment';
+import {connect} from "react-redux";
+import {changeDateTasks} from '../store/date/actions';
 
-export default class DatePick extends Component {
+class DatePick extends Component {
 
   renderDatePickers = () => {
     if (this.props.date === null && this.props.todayOrCalendar === "today") {
@@ -12,13 +14,13 @@ export default class DatePick extends Component {
 
     else if (this.props.todayOrCalendar === "calendar") {
       return  <Calendar
-                 onChange={this.props.onChange}
+                 onChange={this.props.changeDateTasks}
                  value={this.props.date}
               />
     }
 
     else { return <DatePicker
-        onChange={this.props.onChange}
+        onChange={this.props.changeDateTasks}
         value={this.props.date}
       />
     }
@@ -37,3 +39,16 @@ export default class DatePick extends Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    date: state.date.date,
+    todayOrCalendar: state.date.todayOrCalendar
+  }
+}
+
+const mapDispatchToProps = {
+  changeDateTasks
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DatePick);

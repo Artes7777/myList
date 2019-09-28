@@ -5,8 +5,9 @@ import Snackbar from 'material-ui/Snackbar';
 import Dialog from 'material-ui/Dialog';
 import fire from "../fire";
 import './Auth.css';
+import { Field, reduxForm } from 'redux-form';
 
-export default class SingUp extends Component {
+ class SingUp extends Component {
 
   constructor(props){
     super(props);
@@ -147,7 +148,7 @@ console.log(this.state.error);
           <p>Подтвердить пароль</p>
           </div>
         </div>
-
+        <form>
         <div id = "form">
           <TextField
             name = "email"
@@ -178,13 +179,16 @@ console.log(this.state.error);
             onChange = {this.onChange}
          />
         </div>
+        </form>
         </div>
+
         <div id = "button">
         <RaisedButton
           style = {{marginLeft : "16px"}}
           onClick = {this.singUp}
           label="Зарегистрироваться"
           primary />
+
 
           <Snackbar
          open={this.state.open}
@@ -207,3 +211,9 @@ console.log(this.state.error);
     )
   }
 }
+
+ const RegisrationReduxForm = reduxForm({
+  form: 'registration'
+})(SingUp)
+
+export default RegisrationReduxForm

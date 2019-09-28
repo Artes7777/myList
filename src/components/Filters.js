@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux';
+import {setFilterValue} from '../store/filter/actions';
 import PropTypes from 'prop-types';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
-export default class Filters extends  Component {
+ class Filters extends  Component {
 
   static propTypes = {
     filter : PropTypes.string,
-    setFilter : PropTypes.func.isRequired
   }
 
 
   selectFilter = (event, value) => {
-    this.props.setFilter(value);
+    this.props.setFilterValue(value);
   }
 
   render() {
@@ -39,3 +40,15 @@ export default class Filters extends  Component {
     )
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    filter : state.filter.filter
+  }
+}
+
+const mapDispatchToProps = {
+ setFilterValue,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filters)

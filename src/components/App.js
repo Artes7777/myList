@@ -8,9 +8,11 @@ import DatePick from './DatePicker.js';
 import LeftMenu from './LeftMenu.js';
 import fire from "../fire";
 import Peca from "../peca.png";
-import moment from 'moment';
+import {connect} from "react-redux";
 import Avatar from 'material-ui/Avatar';
 import ListItem from 'material-ui/List/ListItem';
+import {isTaskInFilter, isTaskInDate} from '../helpers';
+
 import './App.css';
 
 class App extends Component {
@@ -19,11 +21,8 @@ class App extends Component {
     this.auth = fire.auth();
     this.state = {
       tasks : [],
-      filter : 'all',
       selected : new Set(),
       isSelectedAll: false,
-      date: new Date(),
-      todayOrCalendar : null,
   };
     this.taskManager = new TaskManager();
   }
@@ -45,30 +44,6 @@ class App extends Component {
      })
    }
 
-
-  onChange = date => this.setState({ date })
-
-  setFilter = (value) => {
-    this.setState({filter : value });
-  }
-
-  todayTasks = () => {
-    const today = new Date();
-    this.setState({date : today});
-    this.setState({todayOrCalendar : "today"})
-  }
-
-  weekTasks = () => {
-    this.setState({date : null});
-    this.setState({todayOrCalendar : "today"})
-  }
-
-  renderCalendar = () => {
-    const today = new Date();
-    this.setState({date : today});
-    this.setState({todayOrCalendar : "calendar"})
-  }
-
   toggleTask = (id) => {
     return this.taskManager.toggleTask(id)
       .then( () => {
@@ -80,7 +55,7 @@ class App extends Component {
   }
 
   addTask = (title) => {
-    const date = this.state.date;
+    const date = this.props.date;
     return this.taskManager.addTask(title, date)
       .then( () => {
         this.setState ({
@@ -117,7 +92,7 @@ class App extends Component {
   isSelectedInFilter = () => {
     const ids = this.state.selected;
     return this.state.tasks.some( (task) => {
-      return ids.has(task.id) && this.isTaskInFilter(task) && this.isTaskInDate(task) ;
+      return ids.has(task.id) && isTaskInFilter(task, this.props.filter) && isTaskInDate(task, this.props.date) ;
     });
   }
 
@@ -125,7 +100,7 @@ class App extends Component {
     const ids = this.state.selected;
     const filteredIds = new Set();
     this.state.tasks.forEach( (task) => {
-      if (ids.has(task.id) && this.isTaskInFilter(task) && this.isTaskInDate(task)) {
+      if (ids.has(task.id) && isTaskInFilter(task, this.props.filter) && isTaskInDate(task, this.props.date)) {
         filteredIds.add(task.id);
         ids.delete(task.id);
       }
@@ -173,42 +148,6 @@ class App extends Component {
     this.selectAll(isInputChecked)
   }
 
-  isTaskInFilter = (task) => {
-    switch(this.state.filter) {
-      case "all" :
-        return true;
-      case "completed" :
-        return task.isdone;
-      case "incompleted" :
-        return !task.isdone;
-      default:
-        return true;
-    }
-  }
-
-  isTaskInDate = (task) => {
-    if  (moment(this.state.date).isSame(moment(task.onDateTask), 'day') )   {
-    return moment(task.onDateTask).calendar();
-
-    }
-    else if (this.state.date === null &&
-      moment(task.onDateTask).isAfter(moment().subtract(1, 'days')) &&
-      moment(task.onDateTask).isBefore(moment().add(6, 'days')) ) {
-        return  (moment(task.onDateTask).calendar()) ;
-    }
-  }
-
-
-
-  filterTasks = () => {
-    return ( this.state.tasks.filter(this.isTaskInDate).filter(this.isTaskInFilter) )
-  }
-
-  groupTasks = () => {
-    if (this.state.date === null) {
-
-    }
-  }
 
 
   addNumberValue = (id, priority) => {
@@ -228,11 +167,8 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.auth.currentUser);
 
-    const { tasks, filter, selected, date, isSelectedAll, todayOrCalendar } = this.state;
-    const filteredTasks = this.filterTasks();
-
+    const { tasks, selected, isSelectedAll } = this.state;
     const isTaskEmpty = tasks.length < 1;
     const isSelectedEmpty = this.state.selected.size < 1;
 
@@ -240,9 +176,6 @@ class App extends Component {
       <div id = "Wrapper">
       <div>
       <LeftMenu
-      weekTasks = {this.weekTasks}
-      todayTasks = {this.todayTasks}
-      renderCalendar = {this.renderCalendar}
       logOut = {this.logOut}
       />
       </div>
@@ -265,15 +198,11 @@ class App extends Component {
         }
 
         <DatePick
-          onChange = {this.onChange}
-          date = {date}
-          todayOrCalendar = {todayOrCalendar}
           isTaskEmpty = {isTaskEmpty}
         />
 
         <List
-          tasks = {filteredTasks}
-          date = {date}
+          tasks = {tasks}
           selected = {selected}
           deleteTask = {this.deleteTask}
           toggleTask = {this.toggleTask}
@@ -282,8 +211,6 @@ class App extends Component {
         />
 
         <Filters
-          filter = {filter}
-          setFilter = {this.setFilter}
         />
 
       </div>
@@ -295,12 +222,20 @@ class App extends Component {
            src={Peca}
          />
         }
-       >{ this.displayUserName()}
-       </ListItem>
+       >
+        { this.displayUserName()}
+      </ListItem>
       </div>
       </div>
     )
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    filter: state.filter.filter,
+    date: state.date.date
+  }
+}
+
+export default connect(mapStateToProps)(App);

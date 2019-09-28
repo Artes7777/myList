@@ -6,7 +6,8 @@ import Snackbar from 'material-ui/Snackbar';
 import fire from "../fire";
 import './Auth.css';
 import {connect} from "react-redux";
-import {setEmailText, setPasswordText} from "../store/Auth/actions"
+import {setEmailText, setPasswordText, delErrEmail, setErrEmail, delErrPass, setErrPass,
+        setSnackbarErr, setSnackbarOpen, setSnackbarClose} from "../store/Auth/actions"
 
 class Auth extends Component {
 
@@ -14,12 +15,6 @@ class Auth extends Component {
     super(props);
     this.auth = fire.auth();
     this.state =  {
-
-      errMail : null,
-
-      errPass : null,
-      error: null,
-      open: false,
       emailVerified : false
     }
   }
@@ -31,20 +26,20 @@ class Auth extends Component {
 }
 
   validateMail = () => {
-    if (this.state.email === "") {
+    if (this.props.email === "") {
       throw new Error('Введите вашу элеткронную почту');
     }
-    else if (this.state.email.length) {
-      this.setState({ errMail : null })
+    else if (this.props.email.length) {
+      this.props.delErrEmail();
     }
   }
 
   validatePass = () => {
-    if (this.state.pass === "") {
+    if (this.props.pass === "") {
        throw new Error('Введите пароль')
     }
-    else if (this.state.pass.length > 0) {
-      this.setState({ errPass : null })
+    else if (this.props.pass.length > 0) {
+      this.props.delErrPass();
     }
   }
 
@@ -55,18 +50,18 @@ class Auth extends Component {
   }
 
   singIn = () => {
-    const {email, pass} = this.state;
+    const {email, pass} = this.props;
      try {
        this.validateMail();
      }
      catch(err) {
-       this.setState({errMail : err.message})
+       this.props.setErrEmail(err.message);
      }
       try {
         this.validatePass();
       }
       catch(err) {
-        this.setState({errPass : err.message})
+        this.props.setErrPass(err.message);
       }
 
      this.auth.signInWithEmailAndPassword(email, pass)
@@ -88,18 +83,20 @@ class Auth extends Component {
       if (err.message === "There is no user record corresponding to this identifier. The user may have been deleted." ) {
         err.message = "Нерправильный логин или пароль"
       }
-      this.setState({error:err.message}); this.setState({ open: true})
+      this.props.setSnackbarErr(err.message); this.props.setSnackbarOpen();
       })
     }
 
-  onChange = event => {
-    this.setState({[event.target.name] : event.target.value });
-  };
+  onChangeEmail = event => {
+    this.props.setEmailText(event.target.value)
+  }
+
+  onChangePassword = event => {
+    this.props.setPasswordText(event.target.value)
+  }
 
   handleRequestClose = () => {
-    this.setState({
-      open: false,
-    });
+    this.props.setSnackbarClose();
   };
 
   render(){
@@ -119,16 +116,16 @@ class Auth extends Component {
 
         <div id = "form">
           <TextField
-            errorText = {this.state.errMail}
-            value = {this.state.email}
-            onChange={this.onChange}
+            errorText = {this.props.errMail}
+            value = {this.props.email}
+            onChange={this.onChangeEmail}
             name = "email"
           />
 
           <TextField
-            errorText = {this.state.errPass}
-            value = {this.state.pass}
-            onChange={this.onChange}
+            errorText = {this.props.errPass}
+            value = {this.props.pass}
+            onChange={this.onChangePassword}
             type= "password"
             name = "pass"
           />
@@ -143,8 +140,8 @@ class Auth extends Component {
           primary />
 
         <Snackbar
-          open={this.state.open}
-          message = {this.state.error}
+          open={this.props.open}
+          message = {this.props.error}
           autoHideDuration={4000}
           onRequestClose={this.handleRequestClose}
         />
@@ -159,14 +156,25 @@ class Auth extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    email: state.email,
-    pass: state.pass
+    email: state.auth.email,
+    pass: state.auth.pass,
+    errMail: state.auth.errMail,
+    errPass: state.auth.errPass,
+    error: state.auth.error,
+    open: state.auth.open
   }
 }
 
 const mapDispatchToProps = {
   setEmailText,
-  setPasswordText
+  setPasswordText,
+  delErrEmail,
+  setErrEmail,
+  setErrPass,
+  delErrPass,
+  setSnackbarErr,
+  setSnackbarOpen,
+  setSnackbarClose
 }
 
 

@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Provider} from 'react-redux';
 import {BrowserRouter, Route, Redirect} from "react-router-dom";
-import {store} from '../store/redusers';
+import {store} from '../store/store';
 import App from "./App";
 import Auth from "./Auth";
 import SingUp from "./SingUp";
@@ -30,7 +30,6 @@ export default class Routing extends Component {
 }
 
   render() {
-    console.log(this.state.isAuthenticated)
     const PrivateRoute = ({ component: Component, ...rest }) => {
       return (
         <Route
