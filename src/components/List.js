@@ -97,10 +97,10 @@ class MyList extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
 
   return {
-    tasks : ownProps.tasks.filter((task) => isTaskInFilter(task, state.filter.filter) && isTaskInDate(task, state.date.date)),
+    tasks : state.tasks.tasks.filter((task) => isTaskInFilter(task, state.filter.filter) && isTaskInDate(task, state.date.date)),
     date: state.date.date
   }
 }

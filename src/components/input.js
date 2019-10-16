@@ -2,8 +2,10 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import {connect}  from 'react-redux';
+import {thunkCreatorAddTask} from '../store/app/actions'
 
-export default class Input extends Component {
+ class Input extends Component {
 
   static propTypes = {
     addTask : PropTypes.func.isRequired
@@ -13,12 +15,13 @@ export default class Input extends Component {
     super(props);
     this.state = {
       value : "",
-      error : null
+      error : null,
     } ;
   }
 
-  addTask = (value) => {
-    this.props.addTask(value)
+  addTask = (value, numberValue) => {
+    const date = this.props.date;
+    this.props.thunkCreatorAddTask(value, date, numberValue)
     .then( () => {
       this.setState({
         error : null,
@@ -68,3 +71,15 @@ export default class Input extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    date: state.date.date
+  }
+}
+
+const mapDispatchToProps = {
+  thunkCreatorAddTask
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Input)

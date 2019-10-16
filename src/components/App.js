@@ -12,6 +12,7 @@ import {connect} from "react-redux";
 import Avatar from 'material-ui/Avatar';
 import ListItem from 'material-ui/List/ListItem';
 import {isTaskInFilter, isTaskInDate} from '../helpers';
+import {thunkCreatorInit} from '../store/app/actions';
 
 import './App.css';
 
@@ -28,13 +29,7 @@ class App extends Component {
   }
 
   componentDidMount(){
-    return this.taskManager.init()
-      .then( () => {
-        this.setState({tasks : this.taskManager.getTasks()});
-      })
-    .catch( (err) => {
-      console.log(err);
-    });
+    this.props.thunkCreatorInit()
   }
 
    logOut = () => {
@@ -91,7 +86,7 @@ class App extends Component {
 
   isSelectedInFilter = () => {
     const ids = this.state.selected;
-    return this.state.tasks.some( (task) => {
+    return this.props.tasks.some( (task) => {
       return ids.has(task.id) && isTaskInFilter(task, this.props.filter) && isTaskInDate(task, this.props.date) ;
     });
   }
@@ -99,7 +94,7 @@ class App extends Component {
   multiplyDeleteTasks = () => {
     const ids = this.state.selected;
     const filteredIds = new Set();
-    this.state.tasks.forEach( (task) => {
+    this.props.tasks.forEach( (task) => {
       if (ids.has(task.id) && isTaskInFilter(task, this.props.filter) && isTaskInDate(task, this.props.date)) {
         filteredIds.add(task.id);
         ids.delete(task.id);
@@ -182,7 +177,6 @@ class App extends Component {
       <div id = "appContainer">
         <h1>Список задач</h1>
         <Input
-          addTask = {this.addTask}
         />
 
         {
@@ -202,7 +196,6 @@ class App extends Component {
         />
 
         <List
-          tasks = {tasks}
           selected = {selected}
           deleteTask = {this.deleteTask}
           toggleTask = {this.toggleTask}
@@ -231,11 +224,16 @@ class App extends Component {
   }
 }
 
+const mapDispatchToProps = {
+  thunkCreatorInit
+}
+
 const mapStateToProps = state => {
   return {
     filter: state.filter.filter,
-    date: state.date.date
+    date: state.date.date,
+    tasks: state.tasks.tasks
   }
 }
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

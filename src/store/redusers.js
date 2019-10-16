@@ -5,6 +5,7 @@ import {tasksReducer} from './app/reducers';
 import {dateReducer} from './date/reducers';
 import { reducer as formReducer } from 'redux-form';
 
+
 export default combineReducers  ({
   tasks : tasksReducer,
   auth: authReducer,

@@ -6,7 +6,8 @@ import Snackbar from 'material-ui/Snackbar';
 import fire from "../fire";
 import './Auth.css';
 import {connect} from "react-redux";
-import {setEmailText, setPasswordText, delErrEmail, setErrEmail, delErrPass, setErrPass,
+import {setEmailText, setPasswordText, delErrEmail,
+        setErrEmail, delErrPass, setErrPass,
         setSnackbarErr, setSnackbarOpen, setSnackbarClose} from "../store/Auth/actions"
 
 class Auth extends Component {

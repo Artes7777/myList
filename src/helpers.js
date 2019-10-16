@@ -23,3 +23,12 @@ export const isTaskInDate = (task, date) => {
     return  (moment(task.onDateTask).calendar()) ;
    }
 }
+
+export const validateTask = (title, date) => {
+  if (title === '') {
+    throw new Error('Введите задачу');
+  }
+  if (date === null) {
+    throw new Error('Выберите дату')
+  }
+}

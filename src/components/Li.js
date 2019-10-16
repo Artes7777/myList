@@ -12,8 +12,11 @@ import RedFlag from '../red-flag.svg';
 import YellowFlag from '../yellow-flag.svg';
 import GreyFlag from '../grey-flag.svg';
 import {numberValue} from '../consts';
+import {connect} from "react-redux";
+import {thunkCreatorDeleteTask, thunkCreatorToggleTask, thunkCreatorChangePriority} from '../store/app/actions'
 
-export default class Li extends Component {
+
+class Li extends Component {
 
   static propTypes = {
     index : PropTypes.oneOfType([
@@ -51,26 +54,26 @@ export default class Li extends Component {
    return () => {
     const {
       index,
-      addNumberValue
+      thunkCreatorChangePriority
     } = this.props;
-   addNumberValue(index, priority);
+   thunkCreatorChangePriority(index, priority);
    }
  }
 
   handleClick = () => {
     const {
       index,
-      toggleTask
+      thunkCreatorToggleTask
     } = this.props;
-    toggleTask(index);
+    thunkCreatorToggleTask(index);
   }
 
   deleteTasker = () => {
     const {
       index,
-      deleteTask
+      thunkCreatorDeleteTask
     } = this.props;
-    deleteTask(index);
+    thunkCreatorDeleteTask(index);
   }
 
   renderBtns = () => {
@@ -163,3 +166,17 @@ export default class Li extends Component {
     )
   }
 }
+const mapStateToProps = (state) => {
+  return {
+
+  }
+}
+
+const mapDispatchToProps = {
+  thunkCreatorDeleteTask,
+  thunkCreatorToggleTask,
+  thunkCreatorChangePriority,
+  thunkCreatorChangePriority
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Li)
