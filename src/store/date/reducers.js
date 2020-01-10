@@ -6,7 +6,7 @@ import {SET_CALENDAR} from './actions';
 
 const intialState = {
   date : new Date(),
-  todayOrCalendar : null,
+  todayOrCalendar : "today",
 }
 
 export const dateReducer = (state = intialState, action) => {
@@ -36,6 +36,6 @@ export const dateReducer = (state = intialState, action) => {
         ...state,
         todayOrCalendar: action.payload
       };
+    default : return state;
   }
-  return state;
 }

@@ -5,7 +5,7 @@ import MenuItem from 'material-ui/MenuItem';
 import {connect} from "react-redux";
 import {showTodayTasks, setDailyTasks, setCalendarTasks, showWeekTasks} from '../store/date/actions';
 
- class LeftMenu extends Component {
+class LeftMenu extends Component {
 
   todayTasks = () => {
     this.props.showTodayTasks()
@@ -23,22 +23,24 @@ import {showTodayTasks, setDailyTasks, setCalendarTasks, showWeekTasks} from '..
   }
 
   render() {
+    const font = {
+      fontSize : '18px'
+    }
+
     const style = {
       display: 'inline-block',
-      marginTop: '10px'
+      marginTop: '10px',
     };
 
     return (
-      <div>
-        <Paper style = {style}>
-          <Menu>
-            <MenuItem onClick = {this.todayTasks} primaryText="Сегодня" />
-            <MenuItem onClick = {this.weekTasks} primaryText="На неделю" />
-            <MenuItem onClick = {this.renderCalendar} primaryText="Календарь" />
-            <MenuItem onClick ={this.props.logOut} primaryText="Выйти" />
-          </Menu>
-        </Paper>
-      </div>
+      <Paper style = {style}>
+        <Menu menuItemStyle = {font}>
+        <MenuItem onClick = {this.todayTasks} primaryText="Сегодня" />
+        <MenuItem onClick = {this.weekTasks} primaryText="На неделю" />
+        <MenuItem onClick = {this.renderCalendar} primaryText="Календарь" />
+        <MenuItem onClick ={this.props.logOut} primaryText="Выйти"/>
+        </Menu>
+      </Paper>
     )
   }
 }

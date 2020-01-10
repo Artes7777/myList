@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import IconMenu from 'material-ui/IconMenu';
 import Divider from 'material-ui/Divider';
 import IconunDone from 'material-ui/svg-icons/content/clear';
@@ -13,26 +12,10 @@ import YellowFlag from '../yellow-flag.svg';
 import GreyFlag from '../grey-flag.svg';
 import {numberValue} from '../consts';
 import {connect} from "react-redux";
-import {thunkCreatorDeleteTask, thunkCreatorToggleTask, thunkCreatorChangePriority} from '../store/app/actions'
+import {thunkCreatorDeleteTask, thunkCreatorToggleTask, thunkCreatorChangePriority, selectTask, validateChechbox} from '../store/app/actions'
 
 
 class Li extends Component {
-
-  static propTypes = {
-    index : PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]).isRequired,
-    isdone : PropTypes.bool,
-    title : PropTypes.string,
-    createdAt : PropTypes.number,
-    updatedAt : PropTypes.number,
-    checked : PropTypes.bool,
-    toggleTask :  PropTypes.func.isRequired,
-    deleteTask : PropTypes.func.isRequired,
-    selectTask : PropTypes.func.isRequired,
-
-  }
 
   static defaultProps = {
     isdone : false,
@@ -43,71 +26,84 @@ class Li extends Component {
 
   checkList = (event, isInputChecked) => {
     const {
-      index,
+      id,
       selectTask,
    } = this.props;
-    selectTask(index, isInputChecked);
+    selectTask(id, isInputChecked);
 
   }
 
   addNumberVal = (priority) => {
    return () => {
     const {
-      index,
+      id,
       thunkCreatorChangePriority
     } = this.props;
-   thunkCreatorChangePriority(index, priority);
+   thunkCreatorChangePriority(id, priority);
    }
  }
 
   handleClick = () => {
     const {
-      index,
+      id,
       thunkCreatorToggleTask
     } = this.props;
-    thunkCreatorToggleTask(index);
+    thunkCreatorToggleTask(id);
   }
 
   deleteTasker = () => {
     const {
-      index,
+      id,
       thunkCreatorDeleteTask
     } = this.props;
-    thunkCreatorDeleteTask(index);
+    thunkCreatorDeleteTask(id);
+    this.props.validateChechbox()
   }
 
   renderBtns = () => {
 
+    const styleBtn = {
+      height : '30px',
+      width : '30px'
+    }
+
     return (
       <div className = "RenderBts">
         {this.props.isdone ?
-          <IconunDone onClick = {this.handleClick}  /> :
-        <IconDone onClick = {this.handleClick}  />
+          <IconunDone
+            onClick = {this.handleClick}
+            style = {styleBtn}
+          /> :
+          <IconDone
+            onClick = {this.handleClick}
+            style = {styleBtn}
+          />
         }
-        <IconDelete onClick = {this.deleteTasker} />
+        <IconDelete
+          onClick = {this.deleteTasker}
+          style = {styleBtn}
+        />
 
+        <IconMenu
+          onRequestChange = {this.onKeyCloseMenu}
+          menuStyle = { {width : "100px" } }
 
-         <IconMenu
-            onRequestChange = {this.onKeyCloseMenu}
-            menuStyle = { {width : "100px" } }
-            iconButtonElement={<IconClosedMenu/>}
-            anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-            targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          >
-          <div className = "flexString">Приоритет</div>
-          <div className = "flexBtn">
-            <img alt = "Очень важно" className = "flag"
-              onClick = {this.addNumberVal(numberValue.immediately)} src = {RedFlag}/>
-            <img alt = "Средне важно" className = "flag"
-              onClick = {this.addNumberVal(numberValue.middle)}  src = {YellowFlag} />
-            <img alt = "Менее важно" className = "flag"
-              onClick = {this.addNumberVal(numberValue.normal)}  src = {GreyFlag} />
-          </div>
-            <Divider />
+          iconButtonElement={<IconClosedMenu  style = {styleBtn}/>}
+          anchorOrigin={{horizontal: 'left', vertical: 'top'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+        >
+        <div className = "flexString">Приоритет</div>
+        <div className = "flexBtn">
+          <img alt = "Очень важно" className = "flag"
+            onClick = {this.addNumberVal(numberValue.immediately)} src = {RedFlag}/>
+          <img alt = "Средне важно" className = "flag"
+            onClick = {this.addNumberVal(numberValue.middle)}  src = {YellowFlag} />
+          <img alt = "Менее важно" className = "flag"
+            onClick = {this.addNumberVal(numberValue.normal)}  src = {GreyFlag} />
+        </div>
+          <Divider />
           <div className = "flexString">Напоминание</div>
-          </IconMenu>
-
-
+        </IconMenu>
       </div>
     )
   }
@@ -127,25 +123,23 @@ class Li extends Component {
   }
 
   render() {
+
     const {
       isdone,
       title,
-      checked,
-      numberValue
+      numberValue,
+      checked
     } = this.props;
 
     const taskStyles = {
-      maxWidth : 580,
-      wordWrap : "break-word",
       textDecoration: isdone ? "line-through" : "none",
       fontStyle: (numberValue) === 3 ? "italic" :  "normal",
       fontWeight: (numberValue) === 3 ? "bold": "normal",
-    };
-
+}
     const checkboxStyle = {
       fill : (numberValue === 3) ? 'red' : (numberValue === 2) ? 'orange' : 'grey',
       display : "flex",
-      alignSelf: "center"
+      alignSelf: "center",
     }
 
     return (
@@ -153,7 +147,7 @@ class Li extends Component {
         primaryText = { <div>
                           <div className = "LiContainer" >
                             <Checkbox checked = {checked}
-                            label = {<div style = {taskStyles}>{title}</div>}
+                            label = {<div className = "LiText" style = {taskStyles}>{title}</div>}
                             onCheck = {this.checkList}
                             iconStyle= {checkboxStyle}/>
 
@@ -166,9 +160,12 @@ class Li extends Component {
     )
   }
 }
-const mapStateToProps = (state) => {
-  return {
 
+const mapStateToProps = (state, ownProps) => {
+  const task = state.tasks.tasks.find(task => task.id === ownProps.id)
+  return {
+    ...task,
+    checked: state.tasks.selected.has(ownProps.id)
   }
 }
 
@@ -176,7 +173,8 @@ const mapDispatchToProps = {
   thunkCreatorDeleteTask,
   thunkCreatorToggleTask,
   thunkCreatorChangePriority,
-  thunkCreatorChangePriority
+  selectTask,
+  validateChechbox
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Li)

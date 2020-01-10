@@ -2,13 +2,18 @@ import fire from '../../fire';
 import uuid from 'uuid/v4';
 import {validateTask} from '../../helpers';
 import {numberValue} from '../../consts';
+import {isTaskInFilter, isTaskInDate} from '../../helpers';
 
 export const SET_TASKS = 'SET_TASKS';
 export const SET_TASK = 'SET_TASK';
 export const DELETE_TASK = 'DELETE_TASK';
 export const UPDATE_TASK = 'UPDATE_TASK';
 export const DELETE_TASKS = 'DELETE_TASKS';
-
+export const SELECT_TASK = 'SELECT_TASK';
+export const MULTIPLY_SELECT = 'MULTIPLY_SELECT';
+export const INPUT_CHECKED = 'INPUT_CHECKED';
+export const DELETE_SELECTED = 'DELETE_SELECTED';
+export const VALIDATE_CHECKBOX = 'VALIDATE_CHECKBOX';
 
 const db = fire.database();
 
@@ -37,7 +42,52 @@ export const deleteTasks = (ids) => ({
   payload: ids
 })
 
+export const selectTask = (id, checked) => ({
+  type: SELECT_TASK,
+  payload: {
+    id,
+    checked
+  }
+})
 
+export const multiplySelect = (status, selected) => ({
+  type : MULTIPLY_SELECT,
+  payload: {
+    status,
+    selected
+  }
+})
+
+export const inputChecked = (isInputChecked) => ({
+  type : INPUT_CHECKED,
+  payload: isInputChecked
+})
+
+export const deleteSelected = (id) => ({
+  type : DELETE_SELECTED,
+  payload: id
+})
+
+export const validateChechbox = () => ({
+  type: VALIDATE_CHECKBOX,
+  payload: false
+})
+
+export const multiplySelectTasks = (status) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const selected = state.tasks.selected;
+
+    state.tasks.tasks.forEach( (task) => {
+      if (!selected.has(task.id) && isTaskInFilter(task, state.filter.filter) && isTaskInDate(task, state.date.date)) {
+        selected.add(task.id);
+      }
+    });
+
+    dispatch(inputChecked(status));
+    dispatch(multiplySelect(status, selected));
+  }
+}
 
 export const thunkCreatorInit = () => {
   return (dispatch) => {
@@ -86,6 +136,7 @@ export const thunkCreatorDeleteTask = (id) => {
     return db.ref(`/tasks/${id}`).remove()
       .then(() => {
         dispatch(deleteTask(id));
+        dispatch(deleteSelected(id));
       });
   }
 }

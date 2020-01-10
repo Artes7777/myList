@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Link} from "react-router-dom";
-import Snackbar from 'material-ui/Snackbar';
+import SnackbarComponent from './Snackbar';
 import fire from "../fire";
 import './Auth.css';
 import {connect} from "react-redux";
+import {setSnackbarErr, setSnackbarOpen} from '../store/snackbar/actions';
 import {setEmailText, setPasswordText, delErrEmail,
         setErrEmail, delErrPass, setErrPass,
-        setSnackbarErr, setSnackbarOpen, setSnackbarClose} from "../store/Auth/actions"
+        } from "../store/Auth/actions"
 
 class Auth extends Component {
 
@@ -67,9 +68,7 @@ class Auth extends Component {
 
      this.auth.signInWithEmailAndPassword(email, pass)
     .then(() => {
-       if (this.auth.currentUser.emailVerified === false) {
-         throw new Error('Почта не подверждена')
-       }
+       this.validateVerify();
     })
     .then(() => {
       this.props.history.push("/")
@@ -84,7 +83,8 @@ class Auth extends Component {
       if (err.message === "There is no user record corresponding to this identifier. The user may have been deleted." ) {
         err.message = "Нерправильный логин или пароль"
       }
-      this.props.setSnackbarErr(err.message); this.props.setSnackbarOpen();
+      this.props.setSnackbarErr(err.message);
+      this.props.setSnackbarOpen();
       })
     }
 
@@ -102,7 +102,7 @@ class Auth extends Component {
 
   render(){
     return (
-      <div id = "Wrapper">
+      <div id = "Wraper">
       <div id = "auhtStyle">
         <h1>Добро пожаловать</h1>
         <div id = "auhtform">
@@ -140,12 +140,7 @@ class Auth extends Component {
           label="Войти"
           primary />
 
-        <Snackbar
-          open={this.props.open}
-          message = {this.props.error}
-          autoHideDuration={4000}
-          onRequestClose={this.handleRequestClose}
-        />
+        <SnackbarComponent/>
         </div>
         <div>Вы можете зарегистрироваться <Link to = "/singup">здесь</Link></div>
       </div>
@@ -161,8 +156,6 @@ const mapStateToProps = (state) => {
     pass: state.auth.pass,
     errMail: state.auth.errMail,
     errPass: state.auth.errPass,
-    error: state.auth.error,
-    open: state.auth.open
   }
 }
 
@@ -175,7 +168,6 @@ const mapDispatchToProps = {
   delErrPass,
   setSnackbarErr,
   setSnackbarOpen,
-  setSnackbarClose
 }
 
 

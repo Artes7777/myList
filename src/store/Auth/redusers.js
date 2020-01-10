@@ -4,17 +4,13 @@ import {DEL_ERROR_EMAIL}  from './actions';
 import {SET_ERROR_EMAIL}  from './actions';
 import {DEL_ERROR_PASS}  from './actions';
 import {SET_ERROR_PASS}  from './actions';
-import {SNACKBAR_ERROR}  from './actions';
-import {OPEN_SNACKBAR}  from './actions';
-import {CLOSE_SNACKBAR}  from './actions';
+
 
 const intialState = {
   email : "",
   errMail : null,
   pass : "",
   errPass : null,
-  error: null,
-  open: false,
   emailVerified : false
 }
 
@@ -50,21 +46,7 @@ export const authReducer = (state = intialState, action) => {
           ...state,
           errPass: action.payload
       };
-      case SNACKBAR_ERROR :
-        return {
-          ...state,
-          error: action.payload
-      };
-      case OPEN_SNACKBAR :
-        return {
-          ...state,
-          open: action.payload
-      };
-      case CLOSE_SNACKBAR :
-        return {
-          ...state,
-          open: action.payload
-      };
+
+      default : return state
   }
-  return state
 }

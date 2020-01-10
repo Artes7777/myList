@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import DatePicker from 'react-date-picker';
-import Calendar from 'react-calendar';
 import moment from 'moment';
 import {connect} from "react-redux";
 import {changeDateTasks} from '../store/date/actions';
@@ -8,17 +7,9 @@ import {changeDateTasks} from '../store/date/actions';
 class DatePick extends Component {
 
   renderDatePickers = () => {
-    if (this.props.date === null && this.props.todayOrCalendar === "today") {
+    if (this.props.date === null) {
       return moment().format('D.MM.Y') + " - " + moment().add(6, 'days').format('D.MM.Y')
     }
-
-    else if (this.props.todayOrCalendar === "calendar") {
-      return  <Calendar
-                 onChange={this.props.changeDateTasks}
-                 value={this.props.date}
-              />
-    }
-
     else { return <DatePicker
         onChange={this.props.changeDateTasks}
         value={this.props.date}
@@ -27,13 +18,8 @@ class DatePick extends Component {
 }
 
   render() {
-    const vp = {
-      display : "flex",
-      justifyContent : "center",
-    }
-
     return (
-      <div style = {vp}>
+      <div className = "DatePick">
          {this.renderDatePickers()}
       </div>
     );
@@ -43,7 +29,6 @@ class DatePick extends Component {
 const mapStateToProps = state => {
   return {
     date: state.date.date,
-    todayOrCalendar: state.date.todayOrCalendar
   }
 }
 

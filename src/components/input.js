@@ -1,15 +1,10 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import {connect}  from 'react-redux';
 import {thunkCreatorAddTask} from '../store/app/actions'
 
  class Input extends Component {
-
-  static propTypes = {
-    addTask : PropTypes.func.isRequired
-  }
 
   constructor(props){
     super(props);
@@ -61,6 +56,7 @@ import {thunkCreatorAddTask} from '../store/app/actions'
           onChange = {this.changeInputValue}
           hintText = "Введите задачу"
           floatingLabelText = "Новая задача"
+          style = {{fontSize : '20px'}}
         />
         <RaisedButton
           style = {{marginLeft : "16px"}}

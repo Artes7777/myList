@@ -1,41 +1,42 @@
 import React, {Component} from "react";
-import {Provider} from 'react-redux';
 import {BrowserRouter, Route, Redirect} from "react-router-dom";
-import {store} from '../store/store';
 import App from "./App";
 import Auth from "./Auth";
 import SingUp from "./SingUp";
+import Loader from "./Loader";
 import fire from "../fire";
+import {connect} from 'react-redux';
+import {setAutentification, reduceAutentification, reduceLoader} from '../store/userAccess/actions';
 
 
-export default class Routing extends Component {
+ class Routing extends Component {
 
   constructor(props){
     super(props);
     this.auth = fire.auth();
-    this.state = {
-    isAuthenticated : false
-    }
   }
 
   componentDidMount(){
-   this.auth.onAuthStateChanged((user) => {
-  if (user && this.auth.currentUser.emailVerified === true) {
-   this.setState({isAuthenticated : true})
+    this.auth.onAuthStateChanged((user) => {
+      if (user && this.auth.currentUser.emailVerified === true) {
+        this.props.setAutentification();
+        this.props.reduceLoader()
+      }
+      else {
+        this.props.reduceAutentification();
+        this.props.reduceLoader()
+      }
+    });
   }
-  else {
-    this.setState({isAuthenticated : false})
-  }
-});
-}
 
   render() {
+
     const PrivateRoute = ({ component: Component, ...rest }) => {
       return (
         <Route
           {...rest}
           render={props =>
-            this.state.isAuthenticated ? (
+            this.props.isAuthenticated ? (
               <Component {...props} />
             ) : (
               <Redirect
@@ -55,7 +56,7 @@ export default class Routing extends Component {
         <Route
           {...rest}
           render={props =>
-            this.state.isAuthenticated === false ? (
+            this.props.isAuthenticated === false ? (
               <Component {...props} />
             ) : (
               <Redirect
@@ -71,13 +72,28 @@ export default class Routing extends Component {
     }
 
     return (
-      <Provider store = {store}>
       <BrowserRouter>
+        {this.props.isloading ? <Loader /> :
         <PrivateRoute exact path ="/" component = {App}/>
+        }
         <PrivateRoute1 path ="/auth" component = {Auth}/>
         <Route path ="/singup" component = {SingUp}/>
       </BrowserRouter>
-      </Provider>
     )
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.isAuthenticated.isAuthenticated,
+    isloading: state.isAuthenticated.isloading
+  }
+}
+
+const mapDispatchToProps = {
+  setAutentification,
+  reduceAutentification,
+  reduceLoader
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Routing)

@@ -11,7 +11,6 @@ export const filterReducer = (state = intialState, action ) => {
         ...state,
         filter: action.payload
       }
+    default : return state;  
   };
-
-  return state;
 }

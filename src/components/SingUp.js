@@ -1,136 +1,136 @@
 import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import Snackbar from 'material-ui/Snackbar';
+import SnackbarComponent from './Snackbar';
 import Dialog from 'material-ui/Dialog';
 import fire from "../fire";
 import './Auth.css';
-import { Field, reduxForm } from 'redux-form';
+import {connect} from "react-redux";
+import { Field, reduxForm, formValueSelector} from 'redux-form';
+import {setOpenDialog, setCloseDialog} from "../store/singup/actions";
+import {setSnackbarErr, setSnackbarOpen} from '../store/snackbar/actions';
+
 
  class SingUp extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.auth = fire.auth();
-    this.state =  {
-      email : "",
-      nickName : "",
-      errMail : null,
-      passOne: "",
-      errpassOne: null,
-      passTwo: "",
-      errpassTwo: null,
-      error: null,
-      open: false,
-      openDialog: false,
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if(nextProps.email !== this.props.email) {
+      return false;
+    }
+    else if(nextProps.passOne !== this.props.passOne) {
+      return false;
+    }
+    else if(nextProps.passTwo !== this.props.passTwo) {
+      return false;
+    }
+    else if(nextProps.nickName !== this.props.nickName) {
+      return false;
+    }
+    else return true;
+  }
+
+  validateMail = (value) => {
+    if ( value === "") {
+      return 'Введите вашу элеткронную почту';
     }
   }
 
-  validateMail = () => {
-    if (this.state.email === "") {
-      throw new Error('Введите вашу элеткронную почту');
-    }
-    else if (this.state.email.length) {
-      this.setState({ errMail : null })
+  validatePassOne = (value) => {
+    if (value === undefined || value.length < 6) {
+    return 'Пароль должен содержать 6 и более символов'
     }
   }
 
-  validatePassOne = () => {
-    if (this.state.passOne.length < 6) {
-       throw new Error('Пароль должен содержать 6 и более символов')
+  validatePasswords = (value, allValues) => {
+    if ( value !== allValues.passOne) {
+      return 'Пароли не совпадают'
     }
-    else if (this.state.passOne.length > 5) {
-      this.setState({ errpassOne: null })
+    else if (value === "") {
+      return 'Подтвердить пароль'
     }
-  }
-
-  validatePassTwo = () => {
-    if (this.state.passTwo === "") {
-        throw new Error('Подтвердите пароль')
-    }
-    else if (this.state.passOne === this.state.passTwo) {
-      this.setState({ errpassTwo: null })
-    }
-  }
-
-  validatePasswords = () => {
-    if (this.state.passOne !== this.state.passTwo) {
-      throw new Error('Пароли не совпадают')
-  }
-}
-
-  openDialogWindow = () => {
-    this.setState({openDialog: true})
   }
 
   singUp = () => {
-    const {email, passOne} = this.state;
+    const {email, passOne, passTwo} = this.props;
 
-      try { this.validateMail()
-      } catch (err) {
-      this.setState({errMail : err.message});
-      }
-      try { this.validatePassOne()
-      } catch (err) {
-        this.setState({errpassOne : err.message});
-      }
-      try { this.validatePassTwo()
-      } catch (err) {
-        this.setState({errpassTwo : err.message});
-      }
-      try { this.validatePasswords()
-      } catch (err) {
-        this.setState({error : err.message});
-        this.setState({open: true});
-      }
-      if (this.state.passOne === this.state.passTwo) {
-        this.auth.createUserWithEmailAndPassword(email, passOne)
-       .then(() => {
-         setTimeout(() => {this.props.history.push("/auth")}, 5000);
-          })
-       .then(() => {
-         this.openDialogWindow();
-        })
-        .then(() => {
-          this.auth.currentUser.sendEmailVerification();
-        })
-        .then(() => {
-          this.auth.currentUser.updateProfile({
-            displayName: this.state.nickName,
-          });
-        })
-        .catch((err) => {
-          if (err.message === "The email address is already in use by another account."){
-            err.message = "Такой пользователь уже зарегистрирован";
-          }
-          else if (err.message === "The email address is badly formatted.") {
-            err.message = "Неправильно введена электронная почта"
-          }
-          else if (err.message === "The password must be 6 characters long or more."){
-            err.message = "Пароль должен содержать 6 и более символов"
-          }
-          else if (err.message === "Password should be at least 6 characters"){
-            err.message = "Пароль должен содержать 6 и более символов"
-          }
-          this.setState({error : err.message}); this.setState({open: true})
-        })
-      }
+    if (passOne === passTwo) {
+      this.auth.createUserWithEmailAndPassword(email, passOne)
+      .then(() => {
+       setTimeout(() => {this.props.history.push("/auth")}, 5000);
+       setTimeout( () => {this.props.setCloseDialog()}, 4000);
+      })
+      .then(() => {
+       this.props.setOpenDialog();
+      })
+      .then(() => {
+        this.auth.currentUser.sendEmailVerification();
+      })
+      .then(() => {
+        this.auth.currentUser.updateProfile({
+          displayName: this.props.nickName,
+        });
+      })
+      .catch((err) => {
+        if (err.message === "The email address is already in use by another account."){
+          err.message = "Пользователь с такой почтой уже зарегистрирован";
+        }
+        else if (err.message === "The email address is badly formatted.") {
+          err.message = "Неправильно введена электронная почта"
+        }
+        else if (err.message === "The password must be 6 characters long or more."){
+          err.message = "Пароль должен содержать 6 и более символов"
+        }
+        else if (err.message === "Password should be at least 6 characters"){
+          err.message = "Пароль должен содержать 6 и более символов"
+        }
+        this.props.setSnackbarErr(err.message);
+        this.props.setSnackbarOpen();
+      })
+    }
   }
 
-  onChange = event => {
-    this.setState({[event.target.name] : event.target.value });
-  };
-
-  handleRequestClose = () => {
-    this.setState({
-      open: false,
-    });
-  };
-
   render(){
-console.log(this.state.error);
+
+    const {handleSubmit} = this.props;
+
+    const renderTextField = ({
+      input,
+      meta: {touched, error},
+    }) => (
+      <TextField
+        errorText={touched && error}
+        {...input}
+      />
+    )
+
+  const renderTextFieldPass = ({
+    input,
+    meta: { error, touched },
+  }) => (
+    <TextField
+      type="password"
+      errorText={touched && error}
+      {...input}
+    />
+  )
+
+  const renderTextFieldPassTwo = ({
+    input,
+    meta: { error, touched },
+  }) => (
+    <TextField
+      type="password"
+      errorText={touched && error}
+      {...input}
+    />
+  )
     return (
-      <div id = "Wrapper">
+      <div id = "Wraper">
       <div id = "auhtStyle">
       <h1>Зарегитрируйтесь</h1>
       <div id = "auhtform">
@@ -148,72 +148,90 @@ console.log(this.state.error);
           <p>Подтвердить пароль</p>
           </div>
         </div>
-        <form>
+        <form onSubmit = {handleSubmit}>
         <div id = "form">
-          <TextField
+          <Field
             name = "email"
-            errorText = {this.state.errMail}
-            value = {this.state.email}
-            onChange = {this.onChange}
+            component = {renderTextField}
+            type = 'text'
+            validate = {[this.validateMail]}
           />
 
-          <TextField
+          <Field
             name = "nickName"
-            value = {this.state.nickName}
-            onChange = {this.onChange}
+            component = {renderTextField}
           />
 
-         <TextField
+          <Field
             name = "passOne"
-            type="password"
-            errorText = {this.state.errpassOne}
-            value = {this.state.passOne}
-            onChange = {this.onChange}
+            component = {renderTextFieldPass}
+            validate = {[this.validatePassOne]}
           />
 
-         <TextField
-            name = "passTwo"
-            type="password"
-            errorText = {this.state.errpassTwo}
-            value = {this.state.passTwo}
-            onChange = {this.onChange}
+         <Field
+           name = "passTwo"
+           component = {renderTextFieldPassTwo}
+           validate = {[this.validatePasswords]}
          />
+         <RaisedButton
+           type = "submit"
+           style = {{marginTop : "20px"}}
+           onClick = {this.singUp}
+           label="Зарегистрироваться"
+           primary />
         </div>
         </form>
         </div>
 
         <div id = "button">
-        <RaisedButton
-          style = {{marginLeft : "16px"}}
-          onClick = {this.singUp}
-          label="Зарегистрироваться"
-          primary />
 
-
-          <Snackbar
-         open={this.state.open}
-         message = {this.state.error}
-         autoHideDuration={4000}
-         onRequestClose={this.handleRequestClose}
-       />
+       <SnackbarComponent/>
 
        <Dialog
          title="Проверьте свою почту"
          modal={false}
-         open={this.state.openDialog}
+         open={this.props.openDialog}
          onRequestClose={this.handleClose}
        >Мы отослали вам письмо с подтверждением вашей электронной почты
        </Dialog>
       </div>
       </div>
       </div>
-
     )
   }
 }
 
- const RegisrationReduxForm = reduxForm({
-  form: 'registration'
-})(SingUp)
+const mapStateToProps = (state) => {
+  return {
+    openDialog: state.signup.openDialog,
+    email: selector(state, "email"),
+    passOne: selector(state, "passOne"),
+    passTwo: selector(state, "passTwo"),
+    nickName: selector(state, "nickName"),
+  }
+}
 
-export default RegisrationReduxForm
+const mapDispatchToProps = {
+  setSnackbarErr,
+  setSnackbarOpen,
+  setOpenDialog,
+  setCloseDialog
+}
+
+const selector = formValueSelector('registration');
+
+SingUp = (
+  reduxForm({
+    form: 'registration',
+    onSubmit: values => console.log(values),
+    initialValues : {
+      email : "",
+      nickName : "",
+      passOne: "",
+      passTwo: "",
+    }
+  })
+)(SingUp)
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingUp)

@@ -1,14 +1,13 @@
-#root {
-  padding: 0 10px;
-}
-
 #Wrapper {
-  margin: auto 60px;
+  display: flex;
+  flex-direction : row;
+  max-width: 1400px;
+  width: 100%;
 }
 
 #auhtStyle {
   background-color: white;
-  margin-top: 10px;
+  margin: 0 auto;
   width: 720px;
   border: 1px solid #7AC8FF;
   padding: 10px;
